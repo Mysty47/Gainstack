@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import com.example.backend.dto.SignUpDTO;
 import com.example.backend.entity.User;
+import com.example.backend.mapper.UserMapper;
 import com.example.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +15,21 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public User createUser(SignUpDTO signUpDTO) {
-        User user = new User();
-        user.setUsername(signUpDTO.getUsername());
-        user.setPassword(signUpDTO.getPassword());
-        user.setEmail(signUpDTO.getEmail());
+        User user = userMapper.toEntity(signUpDTO);
         return userRepository.save(user);
+    }
+
+    public User login(String username, String password) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getPassword().equals(password)) {
+            throw new RuntimeException("Wrong password");
+        }
+        return user;
     }
 
     public List<User> getAllUsers() {

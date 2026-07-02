@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.dto.SignUpDTO;
 import com.example.backend.dto.UserResponseDTO;
 import com.example.backend.entity.User;
+import com.example.backend.mapper.UserMapper;
 import com.example.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class SignUpController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDTO> signUp(@RequestBody SignUpDTO signUpDTO) {
-
         User user = userService.createUser(signUpDTO);
-
-        UserResponseDTO response = new UserResponseDTO();
-        response.setId(user.getId());
-        response.setUsername(user.getUsername());
-        response.setEmail(user.getEmail());
+        UserResponseDTO response = userMapper.toDto(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
