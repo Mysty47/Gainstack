@@ -17,9 +17,38 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [focused, setFocused] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Login Success");
+      } else {
+        console.log("Login Failed");
+        setError("Invalid email or password");
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -156,23 +185,31 @@ export default function LoginPage() {
               </a>
             </div>
 
+            {error && (
+              <p className="text-[11px] -mt-2" style={{ color: "#C97A6A" }}>
+                {error}
+              </p>
+            )}
+
             {/* submit */}
             <button
               type="submit"
+              disabled={loading}
               className="group w-full flex items-center justify-center gap-2 py-3.5 mt-2 text-[13px] tracking-[0.2em] uppercase transition-colors"
               style={{
                 backgroundColor: COLORS.gold,
                 color: COLORS.bg,
                 fontWeight: 600,
+                opacity: loading ? 0.7 : 1,
               }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = COLORS.goldBright)
+                !loading && (e.currentTarget.style.backgroundColor = COLORS.goldBright)
               }
               onMouseLeave={(e) =>
                 (e.currentTarget.style.backgroundColor = COLORS.gold)
               }
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
               <ArrowRight
                 size={14}
                 className="transition-transform group-hover:translate-x-1"
