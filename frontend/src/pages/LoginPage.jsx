@@ -24,28 +24,28 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center px-6"
+      className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 py-10 overflow-x-hidden"
       style={{ backgroundColor: COLORS.bg }}
     >
       {/* ambient corner glow */}
       <div
-        className="pointer-events-none fixed -top-40 -left-40 w-96 h-96 rounded-full blur-3xl opacity-20"
+        className="pointer-events-none fixed -top-32 -left-32 w-64 h-64 sm:w-96 sm:h-96 rounded-full blur-3xl opacity-20"
         style={{ background: COLORS.gold }}
       />
       <div
-        className="pointer-events-none fixed -bottom-40 -right-40 w-96 h-96 rounded-full blur-3xl opacity-10"
+        className="pointer-events-none fixed -bottom-32 -right-32 w-64 h-64 sm:w-96 sm:h-96 rounded-full blur-3xl opacity-10"
         style={{ background: COLORS.gold }}
       />
 
       <div className="relative w-full max-w-md">
         {/* monogram */}
-        <div className="flex flex-col items-center mb-10">
+        <div className="flex flex-col items-center mb-8 sm:mb-10">
           <div
-            className="w-14 h-14 flex items-center justify-center mb-5 border"
+            className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mb-4 sm:mb-5 border"
             style={{ borderColor: COLORS.gold }}
           >
             <span
-              className="text-xl tracking-widest"
+              className="text-lg sm:text-xl tracking-widest"
               style={{
                 color: COLORS.gold,
                 fontFamily: "'Playfair Display', Georgia, serif",
@@ -55,7 +55,7 @@ export default function LoginPage() {
             </span>
           </div>
           <h1
-            className="text-2xl tracking-[0.15em] uppercase"
+            className="text-xl sm:text-2xl tracking-[0.15em] uppercase text-center"
             style={{
               color: COLORS.text,
               fontFamily: "'Playfair Display', Georgia, serif",
@@ -64,7 +64,7 @@ export default function LoginPage() {
             Gainstack
           </h1>
           <p
-            className="text-xs tracking-[0.2em] uppercase mt-2"
+            className="text-[10px] sm:text-xs tracking-[0.2em] uppercase mt-2 text-center"
             style={{ color: COLORS.subtext }}
           >
             Members Sign In
@@ -73,10 +73,10 @@ export default function LoginPage() {
 
         {/* card */}
         <div
-          className="border px-8 py-10 sm:px-10 sm:py-12"
+          className="border px-6 py-8 sm:px-10 sm:py-12"
           style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
         >
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             {/* email */}
             <div>
               <label
