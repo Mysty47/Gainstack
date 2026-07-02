@@ -15,26 +15,6 @@ const COLORS = {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const handleLogin = async () => {
-      const response = await fetch("http://localhost:8080/signup", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-              username: username,
-              password: password,
-              email: email
-          })
-      });
-
-
-      if(response.ok) {
-          console.log("Signup Success")
-      } else {
-          console.log("Signup Failed")
-      }
-
 function getPasswordChecks(password) {
   return {
     length: password.length >= 8,
@@ -84,12 +64,34 @@ export default function SignupPage() {
     setTouched((t) => ({ ...t, [field]: true }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitted(true);
-    if (!formValid) return;
-    // form is valid — proceed with actual signup call here
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitted(true);
+
+        if (!formValid) return;
+
+        try {
+            const response = await fetch("http://localhost:8080/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                    email
+                })
+            });
+
+            if (response.ok) {
+                console.log("Signup Success");
+            } else {
+                console.log("Signup Failed");
+            }
+        } catch (err) {
+            console.error("Network error:", err);
+        }
+    };
 
   return (
     <div
