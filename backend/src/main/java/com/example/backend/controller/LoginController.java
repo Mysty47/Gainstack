@@ -19,6 +19,6 @@ public class LoginController {
 
     @PostMapping("/login")
     public User login(@RequestBody LoginDTO loginDTO) {
-        return userService.login(loginDTO.getUsername(), loginDTO.getPassword());
+        return userService.login(loginDTO.getEmail(), loginDTO.getPassword());
     }
 }

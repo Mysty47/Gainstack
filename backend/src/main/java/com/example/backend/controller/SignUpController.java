@@ -19,11 +19,9 @@ public class SignUpController {
     private final UserService userService;
     private final UserMapper userMapper;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDTO> signUp(@RequestBody SignUpDTO signUpDTO) {
-        User user = userService.createUser(signUpDTO);
-        UserResponseDTO response = userMapper.toDto(user);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public UserResponseDTO signUp(@RequestBody SignUpDTO signUpDTO) {
+        return userMapper.toDto(userService.createUser(signUpDTO));
     }
 }
