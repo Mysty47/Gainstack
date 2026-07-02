@@ -1,22 +1,24 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.LoginDTO;
+import com.example.backend.entity.User;
+import com.example.backend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class LoginController {
 
+    private final UserService userService;
+
+    public LoginController(UserService userService) {
+        this.userService = userService;
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
-        if(loginDTO.getUsername().equals("admin") && loginDTO.getPassword().equals("admin")){
-            return ResponseEntity.ok().body("Login Success");
-        }
-        else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public User login(@RequestBody LoginDTO loginDTO) {
+        return userService.login(loginDTO.getEmail(), loginDTO.getPassword());
     }
 }
