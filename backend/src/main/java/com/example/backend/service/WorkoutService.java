@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.WorkoutDTO;
+import com.example.backend.dto.WorkoutResponseDTO;
 import com.example.backend.entity.User;
 import com.example.backend.entity.Workout;
 import com.example.backend.repository.UserRepository;
@@ -18,12 +19,20 @@ public class WorkoutService {
         this.userRepository = userRepository;
     }
 
-    public Workout createWorkout(WorkoutDTO dto, User user) {
+    public WorkoutResponseDTO createWorkout(WorkoutDTO dto, User user) {
+
         Workout workout = new Workout();
         workout.setTitle(dto.getTitle());
         workout.setWorkoutDate(dto.getWorkoutDate());
         workout.setUser(user);
 
-        return workoutRepository.save(workout);
+        Workout saved = workoutRepository.save(workout);
+
+        WorkoutResponseDTO res = new WorkoutResponseDTO();
+        res.setId(saved.getId());
+        res.setTitle(saved.getTitle());
+        res.setWorkoutDate(saved.getWorkoutDate());
+
+        return res;
     }
 }
