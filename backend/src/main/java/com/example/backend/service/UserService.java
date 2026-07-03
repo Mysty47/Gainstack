@@ -5,34 +5,20 @@ import com.example.backend.entity.User;
 import com.example.backend.mapper.UserMapper;
 import com.example.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public User createUser(SignUpDTO signUpDTO) {
         User user = userMapper.toEntity(signUpDTO);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
-    }
-
-    public User login(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!user.getPassword().equals(password)) {
-            throw new RuntimeException("Wrong password");
-        }
-        return user;
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
     }
 }
