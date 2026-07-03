@@ -31,6 +31,6 @@ public class WorkoutController {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return workoutService.createWorkout(dt  o, user);
+        return workoutService.createWorkout(dto, user);
     }
 }

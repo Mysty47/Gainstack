@@ -71,7 +71,7 @@ export default function SignupPage() {
         if (!formValid) return;
 
         try {
-            const response = await fetch("http://localhost:8080/signup", {
+            const response = await fetch("http://localhost:8080/auth/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
