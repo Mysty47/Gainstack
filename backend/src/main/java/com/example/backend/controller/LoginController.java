@@ -1,24 +1,38 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.AuthResponseDTO;
 import com.example.backend.dto.LoginDTO;
-import com.example.backend.entity.User;
-import com.example.backend.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.example.backend.service.JwtService;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
+@RequestMapping("/auth")
 public class LoginController {
 
-    private final UserService userService;
+    private final JwtService jwtService;
 
-    public LoginController(UserService userService) {
-        this.userService = userService;
+    private final AuthenticationManager authenticationManager;
+
+    public LoginController(JwtService jwtService, AuthenticationManager authenticationManager) {
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/login")
-    public User login(@RequestBody LoginDTO loginDTO) {
-        return userService.login(loginDTO.getEmail(), loginDTO.getPassword());
+    public AuthResponseDTO login(@RequestBody LoginDTO loginDTO) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getEmail(),
+                        loginDTO.getPassword()
+                )
+        );
+
+        String token = jwtService.generateToken(loginDTO.getEmail());
+
+        return new AuthResponseDTO(token);
     }
 }
