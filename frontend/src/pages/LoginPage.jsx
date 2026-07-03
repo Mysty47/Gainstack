@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -13,6 +14,8 @@ const COLORS = {
 };
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +25,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setError("");
     setLoading(true);
 
@@ -37,14 +41,18 @@ export default function LoginPage() {
         }),
       });
 
-      if (response.ok) {
-        console.log("Login Success");
-      } else {
-        console.log("Login Failed");
+      if (!response.ok) {
         setError("Invalid email or password");
+        return;
       }
+
+      const data = await response.json();
+
+      localStorage.setItem("token", data.token);
+
+      navigate("/homepage");
     } catch (err) {
-      console.error("Network error:", err);
+      console.error(err);
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -56,18 +64,17 @@ export default function LoginPage() {
       className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 py-10 overflow-x-hidden"
       style={{ backgroundColor: COLORS.bg }}
     >
-      {/* ambient corner glow */}
       <div
         className="pointer-events-none fixed -top-32 -left-32 w-64 h-64 sm:w-96 sm:h-96 rounded-full blur-3xl opacity-20"
         style={{ background: COLORS.gold }}
       />
+
       <div
         className="pointer-events-none fixed -bottom-32 -right-32 w-64 h-64 sm:w-96 sm:h-96 rounded-full blur-3xl opacity-10"
         style={{ background: COLORS.gold }}
       />
 
       <div className="relative w-full max-w-md">
-        {/* monogram */}
         <div className="flex flex-col items-center mb-8 sm:mb-10">
           <div
             className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mb-4 sm:mb-5 border"
@@ -83,6 +90,7 @@ export default function LoginPage() {
               G
             </span>
           </div>
+
           <h1
             className="text-xl sm:text-2xl tracking-[0.15em] uppercase text-center"
             style={{
@@ -92,6 +100,7 @@ export default function LoginPage() {
           >
             Gainstack
           </h1>
+
           <p
             className="text-[10px] sm:text-xs tracking-[0.2em] uppercase mt-2 text-center"
             style={{ color: COLORS.subtext }}
@@ -100,24 +109,30 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* card */}
         <div
           className="border px-6 py-8 sm:px-10 sm:py-12"
-          style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
+          style={{
+            backgroundColor: COLORS.panel,
+            borderColor: COLORS.hairline,
+          }}
         >
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-            {/* email */}
             <div>
               <label
                 className="block text-[11px] tracking-[0.2em] uppercase mb-3"
                 style={{
-                  color: focused === "email" ? COLORS.goldBright : COLORS.subtext,
+                  color:
+                    focused === "email"
+                      ? COLORS.goldBright
+                      : COLORS.subtext,
                 }}
               >
                 Email
               </label>
+
               <input
                 type="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setFocused("email")}
@@ -127,34 +142,40 @@ export default function LoginPage() {
                 style={{
                   color: COLORS.text,
                   borderBottom: `1px solid ${
-                    focused === "email" ? COLORS.gold : COLORS.hairline
+                    focused === "email"
+                      ? COLORS.gold
+                      : COLORS.hairline
                   }`,
-                  transition: "border-color 0.3s ease",
                 }}
               />
             </div>
 
-            {/* password */}
             <div>
               <label
                 className="block text-[11px] tracking-[0.2em] uppercase mb-3"
                 style={{
-                  color: focused === "password" ? COLORS.goldBright : COLORS.subtext,
+                  color:
+                    focused === "password"
+                      ? COLORS.goldBright
+                      : COLORS.subtext,
                 }}
               >
                 Password
               </label>
+
               <div
                 className="flex items-center pb-3"
                 style={{
                   borderBottom: `1px solid ${
-                    focused === "password" ? COLORS.gold : COLORS.hairline
+                    focused === "password"
+                      ? COLORS.gold
+                      : COLORS.hairline
                   }`,
-                  transition: "border-color 0.3s ease",
                 }}
               >
                 <input
                   type={showPassword ? "text" : "password"}
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => setFocused("password")}
@@ -163,14 +184,18 @@ export default function LoginPage() {
                   className="w-full bg-transparent outline-none text-[15px]"
                   style={{ color: COLORS.text }}
                 />
+
                 <button
                   type="button"
-                  onClick={() => setShowPassword((s) => !s)}
+                  onClick={() => setShowPassword(!showPassword)}
                   className="ml-3 shrink-0"
                   style={{ color: COLORS.subtext }}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? (
+                    <EyeOff size={16} />
+                  ) : (
+                    <Eye size={16} />
+                  )}
                 </button>
               </div>
             </div>
@@ -186,30 +211,27 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <p className="text-[11px] -mt-2" style={{ color: "#C97A6A" }}>
+              <p
+                className="text-[11px]"
+                style={{ color: "#C97A6A" }}
+              >
                 {error}
               </p>
             )}
 
-            {/* submit */}
             <button
               type="submit"
               disabled={loading}
-              className="group w-full flex items-center justify-center gap-2 py-3.5 mt-2 text-[13px] tracking-[0.2em] uppercase transition-colors"
+              className="group w-full flex items-center justify-center gap-2 py-3.5 text-[13px] tracking-[0.2em] uppercase"
               style={{
                 backgroundColor: COLORS.gold,
                 color: COLORS.bg,
-                fontWeight: 600,
                 opacity: loading ? 0.7 : 1,
+                fontWeight: 600,
               }}
-              onMouseEnter={(e) =>
-                !loading && (e.currentTarget.style.backgroundColor = COLORS.goldBright)
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = COLORS.gold)
-              }
             >
               {loading ? "Signing In..." : "Sign In"}
+
               <ArrowRight
                 size={14}
                 className="transition-transform group-hover:translate-x-1"
@@ -223,7 +245,7 @@ export default function LoginPage() {
           style={{ color: COLORS.subtext }}
         >
           New here?{" "}
-          <a href="signup#" style={{ color: COLORS.gold }}>
+          <a href="/signup" style={{ color: COLORS.gold }}>
             Create an account
           </a>
         </p>
