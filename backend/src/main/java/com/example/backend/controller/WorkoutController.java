@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.WorkoutDTO;
+import com.example.backend.dto.WorkoutResponseDTO;
 import com.example.backend.entity.User;
 import com.example.backend.entity.Workout;
 import com.example.backend.repository.UserRepository;
@@ -26,7 +27,7 @@ public class WorkoutController {
     }
 
     @PostMapping
-    public Workout createWorkout(@RequestBody WorkoutDTO dto, Authentication authentication) {
+    public WorkoutResponseDTO createWorkout(@RequestBody WorkoutDTO dto, Authentication authentication) {
 
         String email = authentication.getName();
 
