@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequestMapping("/auth")
 public class SignUpController {
 
     private final UserService userService;
