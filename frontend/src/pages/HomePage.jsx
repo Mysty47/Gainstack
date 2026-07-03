@@ -15,9 +15,9 @@ const COLORS = {
   bg: "#0A0A0B",
   panel: "#141315",
   hairline: "#2B2721",
-  gold: "#C9A24B",
-  goldBright: "#E9CD82",
-  goldDim: "#8A7439",
+  gold: "#3f81cc",
+  goldBright: "#528bcc",
+  goldDim: "#327bcf",
   text: "#F3EFE6",
   subtext: "#8C8578",
 };
