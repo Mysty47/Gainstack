@@ -4,6 +4,7 @@ import SignupPage from './pages/SignupPage'
 import HomePage from './pages/HomePage'
 import ProfilePage from './pages/ProfilePage'
 import ExercisesPage from './pages/ExercisesPage'
+import WorkoutCreationPage from './pages/WorkoutCreationPage'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/homepage" element={<HomePage />} />
         <Route path="/profile-page" element={<ProfilePage />} />
         <Route path="/exercises-page" element={<ExercisesPage />} />
+        <Route path="/workout-creation-page" element={<WorkoutCreationPage />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>

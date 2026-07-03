@@ -18,6 +18,7 @@ public class Workout {
     private long id;
 
     private String title;
+
     private LocalDate workoutDate;
 
     @JsonIgnore

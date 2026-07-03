@@ -6,14 +6,12 @@ import com.example.backend.entity.User;
 import com.example.backend.entity.Workout;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.WorkoutService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequestMapping("/workouts")
 public class WorkoutController {
@@ -34,6 +32,6 @@ public class WorkoutController {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return workoutService.createWorkout(dto, user);
+        return workoutService.createWorkout(dt  o, user);
     }
 }

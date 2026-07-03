@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import API_URL from "../config/api";
 
 const COLORS = {
   bg: "#0A0A0B",
   panel: "#141315",
   hairline: "#2B2721",
-  gold: "#C9A24B",
-  goldBright: "#E9CD82",
-  goldDim: "#8A7439",
+  gold: "#3f81cc",
+  goldBright: "#528bcc",
+  goldDim: "#327bcf",
   text: "#F3EFE6",
   subtext: "#8C8578",
 };
@@ -31,7 +30,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
+      const response = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
