@@ -6,6 +6,8 @@ import com.example.backend.entity.User;
 import com.example.backend.entity.Workout;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.WorkoutService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,15 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/workouts")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class WorkoutController {
 
     private final WorkoutService workoutService;
     private final UserRepository userRepository;
-
-    public WorkoutController(WorkoutService workoutService, UserRepository userRepository) {
-        this.workoutService = workoutService;
-        this.userRepository = userRepository;
-    }
 
     @PostMapping
     public WorkoutResponseDTO createWorkout(@RequestBody WorkoutDTO dto, Authentication authentication) {

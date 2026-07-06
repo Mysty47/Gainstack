@@ -32,7 +32,6 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // ✅ USING AXIOS (not fetch)
       const { data } = await api.post("/auth/login", {
         email,
         password,

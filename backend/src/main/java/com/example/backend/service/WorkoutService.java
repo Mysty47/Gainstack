@@ -10,19 +10,18 @@ import com.example.backend.entity.WorkoutExercise;
 import com.example.backend.entity.WorkoutSet;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.WorkoutRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class WorkoutService {
 
     private final WorkoutRepository workoutRepository;
-
-    public WorkoutService(WorkoutRepository workoutRepository) {
-        this.workoutRepository = workoutRepository;
-    }
 
     public WorkoutResponseDTO createWorkout(WorkoutDTO dto, User user) {
 
