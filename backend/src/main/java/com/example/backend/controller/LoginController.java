@@ -1,24 +1,43 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.AuthResponseDTO;
 import com.example.backend.dto.LoginDTO;
-import com.example.backend.entity.User;
-import com.example.backend.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.example.backend.dto.RefreshTokenRequest;
+import com.example.backend.service.AuthService;
+import com.example.backend.service.JwtService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LoginController {
 
-    private final UserService userService;
-
-    public LoginController(UserService userService) {
-        this.userService = userService;
-    }
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final AuthService authService;
 
     @PostMapping("/login")
-    public User login(@RequestBody LoginDTO loginDTO) {
-        return userService.login(loginDTO.getEmail(), loginDTO.getPassword());
+    public AuthResponseDTO login(@RequestBody LoginDTO loginDTO) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getEmail(),
+                        loginDTO.getPassword()
+                )
+        );
+
+        String accessToken = jwtService.generateAccessToken(loginDTO.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(loginDTO.getEmail());
+
+        return new AuthResponseDTO(accessToken, refreshToken);
+    }
+
+    @PostMapping("/refresh")
+    public AuthResponseDTO refresh(@RequestBody RefreshTokenRequest request) {
+        return authService.refresh(request.getRefreshToken());
     }
 }
