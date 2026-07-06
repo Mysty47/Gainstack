@@ -75,7 +75,7 @@ export default function ProfilePage() {
                 fontFamily: "'Playfair Display', Georgia, serif",
               }}
             >
-              {user?.name.charAt(0)}
+              {user?.name?.charAt(0) ?? "?"}
             </span>
           </div>
           <button
