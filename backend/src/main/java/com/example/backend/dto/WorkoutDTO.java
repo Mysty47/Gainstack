@@ -8,6 +8,13 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class WorkoutDTO {
-    private String title;
-    private LocalDate workoutDate;
+    private final long id;
+    private final String title;
+    private final LocalDate workoutDate;
+
+    public WorkoutDTO(long id, String title, LocalDate workoutDate) {
+        this.id = id;
+        this.title = title;
+        this.workoutDate = workoutDate;
+    }
 }

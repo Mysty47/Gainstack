@@ -8,6 +8,8 @@ import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.WorkoutRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class WorkoutService {
 
@@ -34,5 +36,21 @@ public class WorkoutService {
         res.setWorkoutDate(saved.getWorkoutDate());
 
         return res;
+    }
+
+    //TAKES ALL WORKOUTS NOT JUST FOR ONE USER
+    public List<WorkoutDTO> getAllWorkouts() {
+        return workoutRepository.findAllByOrderByWorkoutDateDesc()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    private WorkoutDTO toResponse(Workout workout) {
+        return new WorkoutDTO(
+                workout.getId(),
+                workout.getTitle(),
+                workout.getWorkoutDate()
+        );
     }
 }
