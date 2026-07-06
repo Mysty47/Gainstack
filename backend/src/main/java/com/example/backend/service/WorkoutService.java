@@ -12,11 +12,9 @@ import org.springframework.stereotype.Service;
 public class WorkoutService {
 
     private final WorkoutRepository workoutRepository;
-    private final UserRepository userRepository;
 
-    public WorkoutService(WorkoutRepository workoutRepository, UserRepository userRepository) {
+    public WorkoutService(WorkoutRepository workoutRepository) {
         this.workoutRepository = workoutRepository;
-        this.userRepository = userRepository;
     }
 
     public WorkoutResponseDTO createWorkout(WorkoutDTO dto, User user) {
