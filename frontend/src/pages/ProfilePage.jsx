@@ -1,5 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Camera, Pencil, LogOut, Home, Dumbbell, User } from "lucide-react";
+import { clearTokens } from "../auth/tokenService";
+import { getUserFromToken } from "../auth/tokenService";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -12,19 +14,19 @@ const COLORS = {
   subtext: "#8C8578",
 };
 
-// mock user — replace with real data from your auth/session
-const USER = {
-  name: "Petar Guimaraes",
-  email: "petar.guimaraes@example.com",
-};
+// // mock user — replace with real data from your auth/session
+// const USER = {
+//   name: "Petar Guimaraes",
+//   email: "petar.guimaraes@example.com",
+// };
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const user = getUserFromToken();
   const fields = [
-    { label: "Name", value: USER.name },
-    { label: "Email", value: USER.email },
+     { label: "Name", value: user?.name ?? "—" },
+     { label: "Email", value: user?.email ?? "—" },
   ];
 
   const navItems = [
@@ -32,6 +34,11 @@ export default function ProfilePage() {
     { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/exercises-page" },
     { key: "profile", icon: User, label: "Profile", path: "/profile-page" },
   ];
+
+  const handleLogout = () => {
+    clearTokens();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div
@@ -68,7 +75,7 @@ export default function ProfilePage() {
                 fontFamily: "'Playfair Display', Georgia, serif",
               }}
             >
-              {USER.name.charAt(0)}
+              {user?.name.charAt(0)}
             </span>
           </div>
           <button
@@ -87,7 +94,7 @@ export default function ProfilePage() {
             fontFamily: "'Playfair Display', Georgia, serif",
           }}
         >
-          {USER.name}
+          {user?.name}
         </h2>
         <p
           className="text-[11px] tracking-[0.2em] uppercase mb-8"
@@ -133,6 +140,7 @@ export default function ProfilePage() {
         <button
           className="w-full max-w-md flex items-center justify-center gap-2 py-3.5 mt-8 border text-[13px] tracking-[0.2em] uppercase transition-colors"
           style={{ borderColor: COLORS.hairline, color: COLORS.subtext }}
+          onClick={handleLogout}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = COLORS.gold;
             e.currentTarget.style.color = COLORS.goldBright;
