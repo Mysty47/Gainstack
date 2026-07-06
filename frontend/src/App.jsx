@@ -5,6 +5,8 @@ import HomePage from './pages/HomePage'
 import ProfilePage from './pages/ProfilePage'
 import ExercisesPage from './pages/ExercisesPage'
 import WorkoutCreationPage from './pages/WorkoutCreationPage'
+import CreatePostPage from './pages/CreatePostPage'
+
 
 function App() {
   return (
@@ -16,6 +18,7 @@ function App() {
         <Route path="/profile-page" element={<ProfilePage />} />
         <Route path="/exercises-page" element={<ExercisesPage />} />
         <Route path="/workout-creation-page" element={<WorkoutCreationPage />} />
+        <Route path="/create-post" element={<CreatePostPage />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>

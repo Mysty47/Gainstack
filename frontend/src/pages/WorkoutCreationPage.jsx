@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Search,
@@ -29,19 +29,6 @@ const EQUIPMENT_OPTIONS = [
   "Barbell", "Dumbbell", "Machine", "Cable", "Bodyweight", "Kettlebell", "Bands",
 ];
 
-const INITIAL_LIBRARY = [
-  { id: "e1", name: "Bench Press", muscleGroup: "Chest", equipment: "Barbell" },
-  { id: "e2", name: "Incline Dumbbell Press", muscleGroup: "Chest", equipment: "Dumbbell" },
-  { id: "e3", name: "Squat", muscleGroup: "Legs", equipment: "Barbell" },
-  { id: "e4", name: "Romanian Deadlift", muscleGroup: "Legs", equipment: "Barbell" },
-  { id: "e5", name: "Lat Pulldown", muscleGroup: "Back", equipment: "Cable" },
-  { id: "e6", name: "Bent Over Row", muscleGroup: "Back", equipment: "Barbell" },
-  { id: "e7", name: "Overhead Press", muscleGroup: "Shoulders", equipment: "Barbell" },
-  { id: "e8", name: "Bicep Curl", muscleGroup: "Biceps", equipment: "Dumbbell" },
-  { id: "e9", name: "Tricep Pushdown", muscleGroup: "Triceps", equipment: "Cable" },
-  { id: "e10", name: "Plank", muscleGroup: "Core", equipment: "Bodyweight" },
-];
-
 function makeEmptySet() {
   return { id: crypto.randomUUID(), reps: "", weight: "" };
 }
@@ -50,7 +37,7 @@ export default function CreateWorkoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [library, setLibrary] = useState(INITIAL_LIBRARY);
+  const [library, setLibrary] = useState([]);
   const [title, setTitle] = useState("");
   const [query, setQuery] = useState("");
   const [workoutExercises, setWorkoutExercises] = useState([]);
@@ -59,11 +46,29 @@ export default function CreateWorkoutPage() {
   const [newMuscleGroup, setNewMuscleGroup] = useState(MUSCLE_GROUPS[0]);
   const [newEquipment, setNewEquipment] = useState(EQUIPMENT_OPTIONS[0]);
 
-  const results = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase();
-    return library.filter((ex) => ex.name.toLowerCase().includes(q)).slice(0, 6);
-  }, [query, library]);
+  const results = useMemo(() => library, [library]);
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setLibrary([]);
+      return;
+    }
+    const timeout = setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/exercises?q=${encodeURIComponent(query)}`
+        );
+        if (!response.ok) throw new Error("Search failed");
+        const data = await response.json();
+        setLibrary(data.slice(0, 6));
+      } catch (err) {
+        console.error(err);
+        setLibrary([]);
+      }
+    }, 300); // debounce so we don't fire a request on every keystroke
+
+    return () => clearTimeout(timeout);
+  }, [query]);
 
   const addExerciseToWorkout = (exercise) => {
     setWorkoutExercises((prev) => [
