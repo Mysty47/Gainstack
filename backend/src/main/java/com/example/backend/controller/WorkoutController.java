@@ -5,24 +5,22 @@ import com.example.backend.dto.WorkoutResponseDTO;
 import com.example.backend.entity.User;
 import com.example.backend.entity.Workout;
 import com.example.backend.repository.UserRepository;
-import com.example.backend.repository.WorkoutRepository;
 import com.example.backend.service.WorkoutService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/workouts")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class WorkoutController {
 
     private final WorkoutService workoutService;
     private final UserRepository userRepository;
-
-    public WorkoutController(WorkoutService workoutService, UserRepository userRepository, WorkoutRepository workoutRepository) {
-        this.workoutService = workoutService;
-        this.userRepository = userRepository;
-    }
 
     @PostMapping
     public WorkoutResponseDTO createWorkout(@RequestBody WorkoutDTO dto, Authentication authentication) {
@@ -33,11 +31,5 @@ public class WorkoutController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return workoutService.createWorkout(dto, user);
-    }
-
-    @GetMapping
-    public List<WorkoutDTO> getWorkouts() {
-        // TAKES ALL WORKOUTS NOT ONLY THE USERS WORKOUTS
-        return workoutService.getAllWorkouts();
     }
 }

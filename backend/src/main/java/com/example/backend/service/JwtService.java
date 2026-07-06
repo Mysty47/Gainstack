@@ -20,20 +20,26 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+    private static final long ACCESS_EXPIRATION = 1000 * 60 * 15; // 15 minutes
+    private static final long REFRESH_EXPIRATION = 1000L * 60 * 60 * 24 * 7; // 7 days
 
-    public String generateToken(String email) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, email);
+    public String generateAccessToken(String email) {
+        return buildToken(email, ACCESS_EXPIRATION, "ACCESS");
     }
 
-    private String createToken(Map<String, Object> claims, String email) {
+    public String generateRefreshToken(String email) {
+        return buildToken(email, REFRESH_EXPIRATION, "REFRESH");
+    }
+
+    private String buildToken(String email, long expirationTime, String type) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", type);
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -71,5 +77,14 @@ public class JwtService {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public Boolean validateRefreshToken(String token) {
+        return !isTokenExpired(token)
+                && "REFRESH".equals(extractClaim(token, c -> c.get("type")));
+    }
+
+    public Boolean isRefreshToken(String token) {
+        return "REFRESH".equals(extractClaim(token, c -> c.get("type")));
     }
 }
