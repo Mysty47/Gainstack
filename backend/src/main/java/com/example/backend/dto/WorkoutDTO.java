@@ -4,17 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
 public class WorkoutDTO {
-    private final long id;
-    private final String title;
-    private final LocalDate workoutDate;
 
-    public WorkoutDTO(long id, String title, LocalDate workoutDate) {
-        this.id = id;
-        this.title = title;
-        this.workoutDate = workoutDate;
-    }
+    private String title;
+    private LocalDate workoutDate;
+
+    private List<WorkoutExerciseDTO> exercises;
 }

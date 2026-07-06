@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Setter
@@ -25,4 +26,7 @@ public class Workout {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL,  orphanRemoval = true)
+    private List<WorkoutExercise> exercises;
 }

@@ -2,24 +2,23 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.AuthResponseDTO;
 import com.example.backend.dto.LoginDTO;
+import com.example.backend.dto.RefreshTokenRequest;
+import com.example.backend.service.AuthService;
 import com.example.backend.service.JwtService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LoginController {
 
     private final JwtService jwtService;
-
     private final AuthenticationManager authenticationManager;
-
-    public LoginController(JwtService jwtService, AuthenticationManager authenticationManager) {
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-    }
+    private final AuthService authService;
 
     @PostMapping("/login")
     public AuthResponseDTO login(@RequestBody LoginDTO loginDTO) {
@@ -31,8 +30,14 @@ public class LoginController {
                 )
         );
 
-        String token = jwtService.generateToken(loginDTO.getEmail());
+        String accessToken = jwtService.generateAccessToken(loginDTO.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(loginDTO.getEmail());
 
-        return new AuthResponseDTO(token);
+        return new AuthResponseDTO(accessToken, refreshToken);
+    }
+
+    @PostMapping("/refresh")
+    public AuthResponseDTO refresh(@RequestBody RefreshTokenRequest request) {
+        return authService.refresh(request.getRefreshToken());
     }
 }
