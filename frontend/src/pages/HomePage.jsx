@@ -9,6 +9,7 @@ import {
   Home,
   Dumbbell,
   User,
+  SquarePen,
 } from "lucide-react";
 
 const COLORS = {
@@ -73,6 +74,11 @@ export default function HomePage() {
     setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const sideNavItems = [
+    { key: "create-post", icon: SquarePen, label: "Create Post", path: "/create-post" },
+    { key: "liked", icon: Heart, label: "Liked Posts", path: "/liked-posts" },
+  ];
+
   const navItems = [
     { key: "home", icon: Home, label: "Home", path: "/homepage" },
     { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/exercises-page" },
@@ -80,112 +86,222 @@ export default function HomePage() {
   ];
 
   return (
-    <div
-      className="min-h-screen w-full flex flex-col"
-      style={{ backgroundColor: COLORS.bg }}
-    >
-      {/* header */}
-      <header
-        className="sticky top-0 z-10 flex items-center justify-center py-4 border-b"
-        style={{ backgroundColor: COLORS.bg, borderColor: COLORS.hairline }}
-      >
-        <h1
-          className="text-lg tracking-[0.2em] uppercase"
-          style={{
-            color: COLORS.gold,
-            fontFamily: "'Playfair Display', Georgia, serif",
-          }}
+    <div className="min-h-screen w-full flex" style={{ backgroundColor: COLORS.bg }}>
+
+     {/* Left Sidebar */}
+     <aside
+       className="hidden md:flex md:flex-col md:w-60 md:fixed md:inset-y-0 md:left-0 border-r"
+       style={{
+         backgroundColor: COLORS.panel,
+         borderColor: COLORS.hairline,
+       }}
+     >
+       {/* Logo / Title */}
+       <div
+         className="px-6 py-8 border-b"
+         style={{ borderColor: COLORS.hairline }}
+       >
+         <h2
+           className="text-xl tracking-[0.2em] uppercase"
+           style={{
+             color: COLORS.gold,
+             fontFamily: "'Playfair Display', Georgia, serif",
+           }}
+         >
+           Gainstack
+         </h2>
+
+         <p
+           className="text-xs mt-2 tracking-wide"
+           style={{ color: COLORS.subtext }}
+         >
+           Community
+         </p>
+       </div>
+
+       {/* Navigation */}
+       <div className="flex flex-col gap-3 p-5">
+         {sideNavItems.map(({ key, icon: Icon, label, path }) => {
+           const active = location.pathname === path;
+
+           return (
+             <button
+               key={key}
+               onClick={() => navigate(path)}
+               className="flex items-center gap-4 rounded-xl px-4 py-4 transition-all"
+               style={{
+                 backgroundColor: active ? COLORS.gold : "#1B1A1D",
+                 color: active ? COLORS.bg : COLORS.text,
+                 border: `1px solid ${
+                   active ? COLORS.gold : COLORS.hairline
+                 }`,
+               }}
+             >
+               <Icon
+                 size={20}
+                 style={{
+                   color: active ? COLORS.bg : COLORS.gold,
+                 }}
+               />
+
+               <span
+                 className="text-sm tracking-wide"
+                 style={{
+                   fontWeight: active ? 600 : 500,
+                 }}
+               >
+                 {label}
+               </span>
+             </button>
+           );
+         })}
+       </div>
+
+       {/* Divider */}
+       <div
+         className="mx-5 mt-3 mb-5"
+         style={{
+           height: "1px",
+           backgroundColor: COLORS.hairline,
+         }}
+       />
+
+       {/* Extra Section */}
+       <div className="px-6">
+         <p
+           className="text-[11px] uppercase tracking-[0.25em] mb-3"
+           style={{ color: COLORS.subtext }}
+         >
+           Quick Access
+         </p>
+
+         <div
+           className="rounded-xl p-4"
+           style={{
+             background:
+               "linear-gradient(135deg, rgba(63,129,204,.15), rgba(82,139,204,.05))",
+             border: `1px solid ${COLORS.hairline}`,
+           }}
+         >
+           <p
+             className="text-sm font-medium mb-1"
+             style={{ color: COLORS.text }}
+           >
+             Keep Training 💪
+           </p>
+
+           <p
+             className="text-xs leading-5"
+             style={{ color: COLORS.subtext }}
+           >
+             Share your workouts and inspire other athletes in the community.
+           </p>
+         </div>
+       </div>
+     </aside>
+
+      {/* main column */}
+      <div className="flex-1 md:ml-52 flex flex-col">
+        {/* header */}
+        <header
+          className="sticky top-0 z-10 flex items-center justify-center py-4 border-b"
+          style={{ backgroundColor: COLORS.bg, borderColor: COLORS.hairline }}
         >
-          Gainstack
-        </h1>
-      </header>
-
-      {/* feed */}
-      <main className="flex-1 pb-20">
-        {POSTS.map((post) => (
-          <article
-            key={post.id}
-            className="border-b"
-            style={{ borderColor: COLORS.hairline }}
+          <h1
+            className="text-lg tracking-[0.2em] uppercase"
+            style={{ color: COLORS.gold, fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            {/* post header */}
-            <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center border shrink-0"
-                  style={{ borderColor: COLORS.gold }}
-                >
-                  <span
-                    className="text-xs"
-                    style={{
-                      color: COLORS.gold,
-                      fontFamily: "'Playfair Display', Georgia, serif",
-                    }}
-                  >
-                    {post.user.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm" style={{ color: COLORS.text }}>
-                    {post.user}
-                  </p>
-                  <p className="text-[11px]" style={{ color: COLORS.subtext }}>
-                    {post.time}
-                  </p>
-                </div>
-              </div>
-              <MoreHorizontal size={18} style={{ color: COLORS.subtext }} />
-            </div>
+            Gainstack
+          </h1>
+        </header>
 
-            {/* narrow image */}
-            <div className="px-4 flex justify-center">
-              <div className="overflow-hidden rounded-sm w-2/3 max-w-[220px]">
-                <PostImage />
-              </div>
-            </div>
-
-            {/* workout summary strip */}
-            <div
-              className="px-4 py-2.5 flex items-center justify-between"
-              style={{ backgroundColor: COLORS.panel }}
+        {/* feed */}
+        <main className="flex-1 pb-20">
+          {POSTS.map((post) => (
+            <article
+              key={post.id}
+              className="border-b"
+              style={{ borderColor: COLORS.hairline }}
             >
-              <p className="text-sm" style={{ color: COLORS.goldBright }}>
-                {post.title}
-              </p>
-              <p className="text-[11px]" style={{ color: COLORS.subtext }}>
-                {post.stats}
-              </p>
-            </div>
-
-            {/* actions */}
-            <div className="flex items-center justify-between px-4 pt-3">
-              <div className="flex items-center gap-4">
-                <button onClick={() => toggleLike(post.id)} aria-label="Like">
-                  <Heart
-                    size={22}
-                    fill={liked[post.id] ? COLORS.gold : "none"}
-                    style={{ color: liked[post.id] ? COLORS.gold : COLORS.text }}
-                  />
-                </button>
-                <MessageCircle size={22} style={{ color: COLORS.text }} />
-                <Send size={20} style={{ color: COLORS.text }} />
+              {/* post header */}
+              <div className="flex items-center justify-between px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center border shrink-0"
+                    style={{ borderColor: COLORS.gold }}
+                  >
+                    <span
+                      className="text-xs"
+                      style={{
+                        color: COLORS.gold,
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                      }}
+                    >
+                      {post.user.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm" style={{ color: COLORS.text }}>
+                      {post.user}
+                    </p>
+                    <p className="text-[11px]" style={{ color: COLORS.subtext }}>
+                      {post.time}
+                    </p>
+                  </div>
+                </div>
+                <MoreHorizontal size={18} style={{ color: COLORS.subtext }} />
               </div>
-              <Bookmark size={20} style={{ color: COLORS.text }} />
-            </div>
 
-            {/* likes + caption */}
-            <div className="px-4 py-3">
-              <p className="text-sm mb-1" style={{ color: COLORS.text }}>
-                {post.likes + (liked[post.id] ? 1 : 0)} likes
-              </p>
-              <p className="text-sm" style={{ color: COLORS.subtext }}>
-                <span style={{ color: COLORS.text }}>{post.user}</span>{" "}
-                {post.caption}
-              </p>
-            </div>
-          </article>
-        ))}
-      </main>
+              {/* narrow image */}
+              <div className="px-4 flex justify-center">
+                <div className="overflow-hidden rounded-sm w-2/3 max-w-[220px]">
+                  <PostImage />
+                </div>
+              </div>
+
+              {/* workout summary strip */}
+              <div
+                className="px-4 py-2.5 flex items-center justify-between"
+                style={{ backgroundColor: COLORS.panel }}
+              >
+                <p className="text-sm" style={{ color: COLORS.goldBright }}>
+                  {post.title}
+                </p>
+                <p className="text-[11px]" style={{ color: COLORS.subtext }}>
+                  {post.stats}
+                </p>
+              </div>
+
+              {/* actions */}
+              <div className="flex items-center justify-between px-4 pt-3">
+                <div className="flex items-center gap-4">
+                  <button onClick={() => toggleLike(post.id)} aria-label="Like">
+                    <Heart
+                      size={22}
+                      fill={liked[post.id] ? COLORS.gold : "none"}
+                      style={{ color: liked[post.id] ? COLORS.gold : COLORS.text }}
+                    />
+                  </button>
+                  <MessageCircle size={22} style={{ color: COLORS.text }} />
+                  <Send size={20} style={{ color: COLORS.text }} />
+                </div>
+                <Bookmark size={20} style={{ color: COLORS.text }} />
+              </div>
+
+              {/* likes + caption */}
+              <div className="px-4 py-3">
+                <p className="text-sm mb-1" style={{ color: COLORS.text }}>
+                  {post.likes + (liked[post.id] ? 1 : 0)} likes
+                </p>
+                <p className="text-sm" style={{ color: COLORS.subtext }}>
+                  <span style={{ color: COLORS.text }}>{post.user}</span>{" "}
+                  {post.caption}
+                </p>
+              </div>
+            </article>
+          ))}
+        </main>
+      </div>
 
       {/* bottom nav */}
       <nav
