@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Plus, History, Home, Dumbbell, User, X } from "lucide-react";
 
@@ -46,6 +46,26 @@ export default function ExercisesPage() {
   const [selectedKey, setSelectedKey] = useState(null);
   const [draftTitle, setDraftTitle] = useState("");
   const [draftDescription, setDraftDescription] = useState("");
+  const [createdWorkouts, setCreatedWorkouts] = useState([]);
+  const [loadingWorkouts, setLoadingWorkouts] = useState(true);
+  const [workoutsError, setWorkoutsError] = useState("");
+
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/workouts");
+        if (!response.ok) throw new Error("Failed to fetch workouts");
+        const data = await response.json();
+        setCreatedWorkouts(data);
+      } catch (err) {
+        console.error(err);
+        setWorkoutsError("Couldn't load created workouts.");
+      } finally {
+        setLoadingWorkouts(false);
+      }
+    };
+    fetchWorkouts();
+  }, []);
 
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -249,6 +269,55 @@ export default function ExercisesPage() {
                 </button>
               );
             })}
+          </div>
+        </div>
+
+        {/* created workouts */}
+        <div className="mt-8">
+          <p
+            className="text-[11px] tracking-[0.2em] uppercase mb-4"
+            style={{ color: COLORS.subtext }}
+          >
+            Created Workouts
+          </p>
+
+          {loadingWorkouts && (
+            <p className="text-[13px]" style={{ color: COLORS.subtext }}>
+              Loading...
+            </p>
+          )}
+
+          {workoutsError && (
+            <p className="text-[13px]" style={{ color: "#C97A6A" }}>
+              {workoutsError}
+            </p>
+          )}
+
+          {!loadingWorkouts && !workoutsError && createdWorkouts.length === 0 && (
+            <p className="text-[13px]" style={{ color: COLORS.subtext }}>
+              No workouts created yet.
+            </p>
+          )}
+
+          <div className="space-y-3">
+            {createdWorkouts.map((w) => (
+              <div
+                key={w.id}
+                className="flex items-center justify-between border px-4 py-3"
+                style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
+              >
+                <p className="text-[14px]" style={{ color: COLORS.text }}>
+                  {w.title}
+                </p>
+                <p className="text-[12px]" style={{ color: COLORS.subtext }}>
+                  {new Date(w.workoutDate).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </main>
