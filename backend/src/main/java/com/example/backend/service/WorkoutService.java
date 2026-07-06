@@ -63,20 +63,4 @@ public class WorkoutService {
 
         return res;
     }
-
-    //TAKES ALL WORKOUTS NOT JUST FOR ONE USER
-    public List<WorkoutDTO> getAllWorkouts() {
-        return workoutRepository.findAllByOrderByWorkoutDateDesc()
-                .stream()
-                .map(this::toResponse)
-                .toList();
-    }
-
-    private WorkoutDTO toResponse(Workout workout) {
-        return new WorkoutDTO(
-                workout.getId(),
-                workout.getTitle(),
-                workout.getWorkoutDate()
-        );
-    }
 }
