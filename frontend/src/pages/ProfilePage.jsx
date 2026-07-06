@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Camera, Pencil, Eye, EyeOff, LogOut, Home, Dumbbell, User } from "lucide-react";
+import { Camera, Pencil, LogOut, Home, Dumbbell, User } from "lucide-react";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -17,29 +16,15 @@ const COLORS = {
 const USER = {
   name: "Petar Guimaraes",
   email: "petar.guimaraes@example.com",
-  password: "SuperSecret92!",
 };
-
-function maskPassword(password) {
-  if (password.length <= 4) return "•".repeat(password.length);
-  const visibleStart = password.slice(0, 2);
-  const visibleEnd = password.slice(-2);
-  return `${visibleStart}${"•".repeat(password.length - 4)}${visibleEnd}`;
-}
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showPassword, setShowPassword] = useState(false);
 
   const fields = [
     { label: "Name", value: USER.name },
     { label: "Email", value: USER.email },
-    {
-      label: "Password",
-      value: showPassword ? USER.password : maskPassword(USER.password),
-      isPassword: true,
-    },
   ];
 
   const navItems = [
@@ -132,31 +117,14 @@ export default function ProfilePage() {
                 >
                   {field.label}
                 </p>
-                <p
-                  className="text-[15px] truncate"
-                  style={{ color: COLORS.text, letterSpacing: field.isPassword ? "0.05em" : "normal" }}
-                >
+                <p className="text-[15px] truncate" style={{ color: COLORS.text }}>
                   {field.value}
                 </p>
               </div>
 
-              <div className="flex items-center gap-3 shrink-0 ml-3">
-                {field.isPassword && (
-                  <button
-                    onClick={() => setShowPassword((s) => !s)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? (
-                      <EyeOff size={16} style={{ color: COLORS.subtext }} />
-                    ) : (
-                      <Eye size={16} style={{ color: COLORS.subtext }} />
-                    )}
-                  </button>
-                )}
-                <button aria-label={`Edit ${field.label}`}>
-                  <Pencil size={15} style={{ color: COLORS.goldDim }} />
-                </button>
-              </div>
+              <button aria-label={`Edit ${field.label}`}>
+                <Pencil size={15} style={{ color: COLORS.goldDim }} />
+              </button>
             </div>
           ))}
         </div>

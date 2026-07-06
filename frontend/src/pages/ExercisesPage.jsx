@@ -133,6 +133,7 @@ export default function ExercisesPage() {
         {/* action buttons */}
         <div className="flex gap-4 mb-8">
           <button
+            onClick={() => navigate("/workout-creation-page")}
             className="flex-1 flex flex-col items-center justify-center gap-2 py-6 border transition-colors"
             style={{ backgroundColor: COLORS.panel, borderColor: COLORS.gold }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1C1A16")}
