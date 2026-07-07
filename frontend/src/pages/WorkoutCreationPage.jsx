@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import api from "../api/axios";
 import {
   Search,
   Plus,
@@ -30,7 +31,7 @@ const EQUIPMENT_OPTIONS = [
 ];
 
 function makeEmptySet() {
-  return { id: crypto.randomUUID(), reps: "", weight: "" };
+  return { id: Date.now() + Math.random(), reps: "", weight: "" };
 }
 
 export default function CreateWorkoutPage() {
@@ -39,6 +40,10 @@ export default function CreateWorkoutPage() {
 
   const [library, setLibrary] = useState([]);
   const [title, setTitle] = useState("");
+
+  const [workoutDate, setWorkoutDate] = useState(
+      new Date().toISOString().split("T")[0]
+  );
   const [query, setQuery] = useState("");
   const [workoutExercises, setWorkoutExercises] = useState([]);
   const [showNewExercise, setShowNewExercise] = useState(false);
@@ -47,28 +52,6 @@ export default function CreateWorkoutPage() {
   const [newEquipment, setNewEquipment] = useState(EQUIPMENT_OPTIONS[0]);
 
   const results = useMemo(() => library, [library]);
-
-  useEffect(() => {
-    if (!query.trim()) {
-      setLibrary([]);
-      return;
-    }
-    const timeout = setTimeout(async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/exercises?q=${encodeURIComponent(query)}`
-        );
-        if (!response.ok) throw new Error("Search failed");
-        const data = await response.json();
-        setLibrary(data.slice(0, 6));
-      } catch (err) {
-        console.error(err);
-        setLibrary([]);
-      }
-    }, 300); // debounce so we don't fire a request on every keystroke
-
-    return () => clearTimeout(timeout);
-  }, [query]);
 
   const addExerciseToWorkout = (exercise) => {
     setWorkoutExercises((prev) => [
@@ -114,7 +97,7 @@ export default function CreateWorkoutPage() {
   const createNewExercise = () => {
     if (!newName.trim()) return;
     const exercise = {
-      id: crypto.randomUUID(),
+      id: Date.now(),
       name: newName.trim(),
       muscleGroup: newMuscleGroup,
       equipment: newEquipment,
@@ -127,16 +110,46 @@ export default function CreateWorkoutPage() {
     setShowNewExercise(false);
   };
 
-  const handleSaveWorkout = () => {
+  const handleSaveWorkout = async () => {
+
     const payload = {
       title,
+      workoutDate,
       exercises: workoutExercises.map((ex) => ({
         exerciseId: ex.id,
-        sets: ex.sets.map((s) => ({ reps: Number(s.reps), weight: Number(s.weight) })),
+        sets: ex.sets.map((s) => ({
+          reps: Number(s.reps),
+          weight: Number(s.weight),
+        })),
       })),
     };
-    console.log("Saving workout:", payload);
-    // POST this payload to your backend endpoint here
+
+
+    try {
+
+      const response = await api.post(
+          "/workouts",
+          payload
+      );
+
+
+      console.log(
+          "Workout saved:",
+          response.data
+      );
+
+
+      navigate("/homepage");
+
+
+    } catch(error) {
+
+      console.error(
+          "Workout creation failed:",
+          error
+      );
+
+    }
   };
 
   const canSave = title.trim().length > 0 && workoutExercises.length > 0;
@@ -148,86 +161,125 @@ export default function CreateWorkoutPage() {
   ];
 
   return (
-    <div className="min-h-screen w-full flex flex-col" style={{ backgroundColor: COLORS.bg }}>
-      {/* header */}
-      <header
-        className="sticky top-0 z-10 flex items-center justify-center py-4 border-b"
-        style={{ backgroundColor: COLORS.bg, borderColor: COLORS.hairline }}
-      >
-        <h1
-          className="text-lg tracking-[0.2em] uppercase"
-          style={{ color: COLORS.gold, fontFamily: "'Playfair Display', Georgia, serif" }}
+      <div className="min-h-screen w-full flex flex-col" style={{ backgroundColor: COLORS.bg }}>
+        {/* header */}
+        <header
+            className="sticky top-0 z-10 flex items-center justify-center py-4 border-b"
+            style={{ backgroundColor: COLORS.bg, borderColor: COLORS.hairline }}
         >
-          New Workout
-        </h1>
-      </header>
+          <h1
+              className="text-lg tracking-[0.2em] uppercase"
+              style={{ color: COLORS.gold, fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            New Workout
+          </h1>
+        </header>
 
-      <main className="flex-1 px-5 pt-6 pb-28">
-        {/* title */}
-        <div className="mb-6">
-          <label
-            className="block text-[11px] tracking-[0.2em] uppercase mb-3"
-            style={{ color: COLORS.subtext }}
-          >
-            Workout Title
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Push Day"
-            className="w-full bg-transparent outline-none pb-3 text-[15px]"
-            style={{ color: COLORS.text, borderBottom: `1px solid ${COLORS.hairline}` }}
-          />
-        </div>
+        <main className="flex-1 px-5 pt-6 pb-28">
 
-        {/* search bar */}
-        <div className="mb-2 relative">
-          <label
-            className="block text-[11px] tracking-[0.2em] uppercase mb-3"
-            style={{ color: COLORS.subtext }}
-          >
-            Add Exercise
-          </label>
-          <div
-            className="flex items-center gap-2 px-3 border"
-            style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
-          >
-            <Search size={16} style={{ color: COLORS.subtext }} />
+          {/* title */}
+          <div className="mb-6">
+            <label
+                className="block text-[11px] tracking-[0.2em] uppercase mb-3"
+                style={{ color: COLORS.subtext }}
+            >
+              Workout Title
+            </label>
+
             <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search exercises..."
-              className="w-full bg-transparent outline-none py-2.5 text-[14px]"
-              style={{ color: COLORS.text }}
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Push Day"
+                className="w-full bg-transparent outline-none pb-3 text-[15px]"
+                style={{
+                  color: COLORS.text,
+                  borderBottom: `1px solid ${COLORS.hairline}`
+                }}
             />
           </div>
 
-          {/* search results dropdown */}
-          {results.length > 0 && (
-            <div
-              className="absolute left-0 right-0 z-10 border border-t-0"
-              style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
+
+          {/* workout date */}
+          <div className="mb-6">
+            <label
+                className="block text-[11px] tracking-[0.2em] uppercase mb-3"
+                style={{ color: COLORS.subtext }}
             >
-              {results.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => addExerciseToWorkout(ex)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 text-left border-b last:border-b-0"
-                  style={{ borderColor: COLORS.hairline }}
-                >
-                  <span className="text-[14px]" style={{ color: COLORS.text }}>
-                    {ex.name}
-                  </span>
-                  <span className="text-[11px]" style={{ color: COLORS.subtext }}>
-                    {ex.muscleGroup} · {ex.equipment}
-                  </span>
-                </button>
-              ))}
+              Workout Date
+            </label>
+
+            <input
+                type="date"
+                value={workoutDate}
+                onChange={(e) => setWorkoutDate(e.target.value)}
+                className="w-full bg-transparent outline-none pb-3 text-[15px]"
+                style={{
+                  color: COLORS.text,
+                  borderBottom: `1px solid ${COLORS.hairline}`
+                }}
+            />
+          </div>
+
+
+          {/* search bar */}
+          <div className="mb-2 relative">
+            <label
+                className="block text-[11px] tracking-[0.2em] uppercase mb-3"
+                style={{ color: COLORS.subtext }}
+            >
+              Add Exercise
+            </label>
+
+            <div
+                className="flex items-center gap-2 px-3 border"
+                style={{
+                  backgroundColor: COLORS.panel,
+                  borderColor: COLORS.hairline
+                }}
+            >
+              <Search size={16} style={{ color: COLORS.subtext }} />
+
+              <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search exercises..."
+                  className="w-full bg-transparent outline-none py-2.5 text-[14px]"
+                  style={{ color: COLORS.text }}
+              />
             </div>
-          )}
-        </div>
+
+            {/* search results dropdown */}
+            {results.length > 0 && (
+                <div
+                    className="absolute left-0 right-0 z-10 border border-t-0"
+                    style={{
+                      backgroundColor: COLORS.panel,
+                      borderColor: COLORS.hairline
+                    }}
+                >
+                  {results.map((ex) => (
+                      <button
+                          key={ex.id}
+                          onClick={() => addExerciseToWorkout(ex)}
+                          className="w-full flex items-center justify-between px-3 py-2.5 text-left border-b last:border-b-0"
+                          style={{ borderColor: COLORS.hairline }}
+                      >
+                <span className="text-[14px]" style={{ color: COLORS.text }}>
+                  {ex.name}
+                </span>
+
+                        <span className="text-[11px]" style={{ color: COLORS.subtext }}>
+                  {ex.muscleGroup} · {ex.equipment}
+                </span>
+                      </button>
+                  ))}
+                </div>
+            )}
+          </div>
+
+          {/* rest of your page stays exactly the same */}
 
         {/* new exercise trigger */}
         <button
