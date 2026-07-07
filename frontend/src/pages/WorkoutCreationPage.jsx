@@ -191,7 +191,12 @@ export default function CreateWorkoutPage() {
         </div>
 
         {/* search bar */}
-        <div className="mb-2 relative">
+        <div
+          className="relative"
+          style={{
+            marginBottom: results.length > 0 ? `${results.length * 52 + 16}px` : "8px",
+          }}
+        >
           <div className="flex items-center gap-3 mb-3">
             <label
               className="text-[11px] tracking-[0.2em] uppercase"
