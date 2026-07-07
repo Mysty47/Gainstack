@@ -3,9 +3,13 @@ package com.example.backend.controller;
 import com.example.backend.dto.AuthResponseDTO;
 import com.example.backend.dto.LoginDTO;
 import com.example.backend.dto.RefreshTokenRequest;
+import com.example.backend.dto.UserDTO;
 import com.example.backend.service.AuthService;
 import com.example.backend.service.JwtService;
+import com.example.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +23,7 @@ public class LoginController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public AuthResponseDTO login(@RequestBody LoginDTO loginDTO) {
