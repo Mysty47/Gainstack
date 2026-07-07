@@ -475,6 +475,8 @@ export default function CreateWorkoutPage() {
             Save Workout
           </button>
         </div>
+        </div>
+          </div>
       </main>
 
       {/* new exercise modal */}
