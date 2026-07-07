@@ -17,7 +17,7 @@ public class WorkoutExercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long exerciseId; // from your exercise library
+    private Long exerciseId;
 
     @JsonIgnore
     @ManyToOne
