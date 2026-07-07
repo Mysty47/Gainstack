@@ -323,20 +323,29 @@ export default function CreateWorkoutPage() {
           ))}
         </div>
 
-        {/* save button */}
-        <button
-          onClick={handleSaveWorkout}
-          disabled={!canSave}
-          className="w-full py-3.5 mt-8 text-[13px] tracking-[0.2em] uppercase transition-colors"
-          style={{
-            backgroundColor: canSave ? COLORS.gold : COLORS.goldDim,
-            color: COLORS.bg,
-            fontWeight: 600,
-            opacity: canSave ? 1 : 0.6,
-          }}
-        >
-          Save Workout
-        </button>
+        {/* save / cancel buttons */}
+        <div className="flex gap-3 mt-8">
+          <button
+            onClick={() => navigate("/exercises-page")}
+            className="flex-1 py-3.5 text-[13px] tracking-[0.2em] uppercase border"
+            style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveWorkout}
+            disabled={!canSave}
+            className="flex-1 py-3.5 text-[13px] tracking-[0.2em] uppercase transition-colors"
+            style={{
+              backgroundColor: canSave ? COLORS.gold : COLORS.goldDim,
+              color: COLORS.bg,
+              fontWeight: 600,
+              opacity: canSave ? 1 : 0.6,
+            }}
+          >
+            Save Workout
+          </button>
+        </div>
       </main>
 
       {/* new exercise modal */}
