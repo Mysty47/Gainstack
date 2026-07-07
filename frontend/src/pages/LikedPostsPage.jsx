@@ -24,33 +24,36 @@ const COLORS = {
 };
 
 const POSTS = [
-  {
-    id: 1,
-    user: "pguimaraes",
-    time: "13h ago",
-    title: "Full Body 1 — Complete",
-    stats: "59min · 3,610.6 kg · 6 PRs",
-    likes: 24,
-    caption: "A little lazy today, but showed up.",
-  },
-  {
-    id: 2,
-    user: "desmond.k",
-    time: "1d ago",
-    title: "Push Day",
-    stats: "47min · 2,980 kg · 2 PRs",
-    likes: 41,
-    caption: "New bench PR. Felt strong.",
-  },
-  {
-    id: 3,
-    user: "elena_lifts",
-    time: "2d ago",
-    title: "Leg Day",
-    stats: "1h 12min · 4,220 kg",
-    likes: 63,
-    caption: "Squats humbled me today.",
-  },
+//   {
+//     id: 1,
+//     user: "pguimaraes",
+//     time: "13h ago",
+//     title: "Full Body 1 — Complete",
+//     stats: "59min · 3,610.6 kg · 6 PRs",
+//     likes: 24,
+//     liked: true,
+//     caption: "A little lazy today, but showed up.",
+//   },
+//   {
+//     id: 2,
+//     user: "desmond.k",
+//     time: "1d ago",
+//     title: "Push Day",
+//     stats: "47min · 2,980 kg · 2 PRs",
+//     likes: 41,
+//     liked: false,
+//     caption: "New bench PR. Felt strong.",
+//   },
+//   {
+//     id: 3,
+//     user: "elena_lifts",
+//     time: "2d ago",
+//     title: "Leg Day",
+//     stats: "1h 12min · 4,220 kg",
+//     likes: 63,
+//     liked: true,
+//     caption: "Squats humbled me today.",
+//   },
 ];
 
 function PostImage() {
@@ -65,7 +68,7 @@ function PostImage() {
   );
 }
 
-export default function HomePage() {
+export default function LikedPostPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [liked, setLiked] = useState({}); //trqbva da se vzima ot bazata danni
@@ -81,7 +84,7 @@ export default function HomePage() {
 
   const navItems = [
     { key: "home", icon: Home, label: "Home", path: "/homepage" },
-    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/workout-page" },
+    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/exercises-page" },
     { key: "profile", icon: User, label: "Profile", path: "/profile-page" },
   ];
 
@@ -207,17 +210,30 @@ export default function HomePage() {
           className="sticky top-0 z-10 flex items-center justify-center py-4 border-b"
           style={{ backgroundColor: COLORS.bg, borderColor: COLORS.hairline }}
         >
-          <h1
-            className="text-lg tracking-[0.2em] uppercase"
-            style={{ color: COLORS.gold, fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
-            Gainstack
-          </h1>
+          <div className="flex items-center justify-center relative w-full">
+            <button
+              onClick={() => navigate("/homepage")}
+              className="absolute left-5 text-sm"
+              style={{ color: COLORS.gold }}
+            >
+              ← Back
+            </button>
+
+            <h1
+              className="text-lg tracking-[0.2em] uppercase"
+              style={{
+                color: COLORS.gold,
+                fontFamily: "'Playfair Display', Georgia, serif",
+              }}
+            >
+              Liked Posts
+            </h1>
+          </div>
         </header>
 
         {/* feed */}
         <main className="flex-1 pb-20">
-          {POSTS.map((post) => (
+          {POSTS.filter(post => post.liked).map((post) => (
             <article
               key={post.id}
               className="border-b"

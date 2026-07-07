@@ -133,7 +133,6 @@ export default function CreateWorkoutPage() {
       muscleGroup: newMuscleGroup,
       equipment: newEquipment,
     };
-    setLibrary((prev) => [...prev, exercise]);
     addExerciseToWorkout(exercise);
     setNewName("");
     setNewMuscleGroup(MUSCLE_GROUPS[0]);
@@ -187,7 +186,7 @@ export default function CreateWorkoutPage() {
 
   const navItems = [
     { key: "home", icon: Home, label: "Home", path: "/homepage" },
-    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/exercises-page" },
+    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/workout-page" },
     { key: "profile", icon: User, label: "Profile", path: "/profile-page" },
   ];
 
@@ -241,13 +240,17 @@ export default function CreateWorkoutPage() {
             </label>
 
         {/* search bar */}
-        <div className="mb-2 relative">
+        <div
+          className="relative"
+          style={{
+            marginBottom: results.length > 0 ? `${results.length * 52 + 16}px` : "8px",
+          }}
+        >
           <div className="flex items-center gap-3 mb-3">
             <label
               className="text-[11px] tracking-[0.2em] uppercase"
               style={{ color: COLORS.subtext }}
             >
-              Add Exercise
             </label>
             <select
               value={filterMuscleGroup}
@@ -455,7 +458,7 @@ export default function CreateWorkoutPage() {
         {/* save / cancel buttons */}
         <div className="flex gap-3 mt-8">
           <button
-            onClick={() => navigate("/exercises-page")}
+            onClick={() => navigate("/workout-page")}
             className="flex-1 py-3.5 text-[13px] tracking-[0.2em] uppercase border"
             style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
           >

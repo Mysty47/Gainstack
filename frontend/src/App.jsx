@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
-import ExercisesPage from "./pages/ExercisesPage";
+import ExercisesPage from "./pages/WorkoutPage.jsx";
 import WorkoutCreationPage from "./pages/WorkoutCreationPage";
 import CreatePostPage from "./pages/CreatePostPage";
 
@@ -38,7 +38,7 @@ function App() {
           />
 
           <Route
-              path="/exercises-page"
+              path="/workout-page"
               element={
                 <ProtectedRoute>
                   <ExercisesPage />
