@@ -9,6 +9,7 @@ import WorkoutCreationPage from "./pages/WorkoutCreationPage";
 import CreatePostPage from "./pages/CreatePostPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import LikedPostPage from "./pages/LikedPostsPage.jsx";
 
 
 function App() {
@@ -51,6 +52,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <WorkoutCreationPage />
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/liked-posts"
+              element={
+                <ProtectedRoute>
+                  <LikedPostPage />
                 </ProtectedRoute>
               }
           />
