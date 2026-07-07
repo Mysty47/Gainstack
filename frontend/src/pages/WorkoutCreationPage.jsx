@@ -50,8 +50,39 @@ export default function CreateWorkoutPage() {
   const [newName, setNewName] = useState("");
   const [newMuscleGroup, setNewMuscleGroup] = useState(MUSCLE_GROUPS[0]);
   const [newEquipment, setNewEquipment] = useState(EQUIPMENT_OPTIONS[0]);
+  const [filterMuscleGroup, setFilterMuscleGroup] = useState("All");
+  const [filterEquipment, setFilterEquipment] = useState("All");
 
   const results = useMemo(() => library, [library]);
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setLibrary([]);
+      return;
+    }
+    const timeout = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({ q: query });
+        if (filterMuscleGroup !== "All") params.set("muscleGroup", filterMuscleGroup);
+        if (filterEquipment !== "All") params.set("equipment", filterEquipment);
+
+        // NOTE: backend doesn't filter by muscleGroup/equipment yet —
+        // these params are sent already so the endpoint can pick them up
+        // once that filtering logic is added server-side.
+        const response = await fetch(
+          `http://localhost:8080/api/exercises?${params.toString()}`
+        );
+        if (!response.ok) throw new Error("Search failed");
+        const data = await response.json();
+        setLibrary(data.slice(0, 6));
+      } catch (err) {
+        console.error(err);
+        setLibrary([]);
+      }
+    }, 300); // debounce so we don't fire a request on every keystroke
+
+    return () => clearTimeout(timeout);
+  }, [query, filterMuscleGroup, filterEquipment]);
 
   const addExerciseToWorkout = (exercise) => {
     setWorkoutExercises((prev) => [
@@ -209,6 +240,52 @@ export default function CreateWorkoutPage() {
               Workout Date
             </label>
 
+        {/* search bar */}
+        <div className="mb-2 relative">
+          <div className="flex items-center gap-3 mb-3">
+            <label
+              className="text-[11px] tracking-[0.2em] uppercase"
+              style={{ color: COLORS.subtext }}
+            >
+              Add Exercise
+            </label>
+            <select
+              value={filterMuscleGroup}
+              onChange={(e) => setFilterMuscleGroup(e.target.value)}
+              className="bg-transparent outline-none text-[11px] border-b py-0.5"
+              style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
+            >
+              <option value="All" style={{ backgroundColor: COLORS.panel }}>
+                All Muscles
+              </option>
+              {MUSCLE_GROUPS.map((mg) => (
+                <option key={mg} value={mg} style={{ backgroundColor: COLORS.panel }}>
+                  {mg}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={filterEquipment}
+              onChange={(e) => setFilterEquipment(e.target.value)}
+              className="bg-transparent outline-none text-[11px] border-b py-0.5"
+              style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
+            >
+              <option value="All" style={{ backgroundColor: COLORS.panel }}>
+                All Equipment
+              </option>
+              {EQUIPMENT_OPTIONS.map((eq) => (
+                <option key={eq} value={eq} style={{ backgroundColor: COLORS.panel }}>
+                  {eq}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div
+            className="flex items-center gap-2 px-3 border"
+            style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
+          >
+            <Search size={16} style={{ color: COLORS.subtext }} />
             <input
                 type="date"
                 value={workoutDate}
@@ -375,20 +452,29 @@ export default function CreateWorkoutPage() {
           ))}
         </div>
 
-        {/* save button */}
-        <button
-          onClick={handleSaveWorkout}
-          disabled={!canSave}
-          className="w-full py-3.5 mt-8 text-[13px] tracking-[0.2em] uppercase transition-colors"
-          style={{
-            backgroundColor: canSave ? COLORS.gold : COLORS.goldDim,
-            color: COLORS.bg,
-            fontWeight: 600,
-            opacity: canSave ? 1 : 0.6,
-          }}
-        >
-          Save Workout
-        </button>
+        {/* save / cancel buttons */}
+        <div className="flex gap-3 mt-8">
+          <button
+            onClick={() => navigate("/exercises-page")}
+            className="flex-1 py-3.5 text-[13px] tracking-[0.2em] uppercase border"
+            style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveWorkout}
+            disabled={!canSave}
+            className="flex-1 py-3.5 text-[13px] tracking-[0.2em] uppercase transition-colors"
+            style={{
+              backgroundColor: canSave ? COLORS.gold : COLORS.goldDim,
+              color: COLORS.bg,
+              fontWeight: 600,
+              opacity: canSave ? 1 : 0.6,
+            }}
+          >
+            Save Workout
+          </button>
+        </div>
       </main>
 
       {/* new exercise modal */}

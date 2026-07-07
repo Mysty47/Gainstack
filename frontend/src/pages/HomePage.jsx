@@ -201,7 +201,7 @@ export default function HomePage() {
      </aside>
 
       {/* main column */}
-      <div className="flex-1 md:ml-52 flex flex-col">
+      <div className="flex-1 md:ml-60 flex flex-col">
         {/* header */}
         <header
           className="sticky top-0 z-10 flex items-center justify-center py-4 border-b"
