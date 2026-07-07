@@ -152,7 +152,7 @@ export default function CreateWorkoutPage() {
 
   const navItems = [
     { key: "home", icon: Home, label: "Home", path: "/homepage" },
-    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/exercises-page" },
+    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/workout-page" },
     { key: "profile", icon: User, label: "Profile", path: "/profile-page" },
   ];
 
@@ -373,7 +373,7 @@ export default function CreateWorkoutPage() {
         {/* save / cancel buttons */}
         <div className="flex gap-3 mt-8">
           <button
-            onClick={() => navigate("/exercises-page")}
+            onClick={() => navigate("/workout-page")}
             className="flex-1 py-3.5 text-[13px] tracking-[0.2em] uppercase border"
             style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
           >

@@ -37,7 +37,7 @@ function getMonthGrid(year, month) {
   return cells;
 }
 
-export default function ExercisesPage() {
+export default function WorkoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const today = new Date();

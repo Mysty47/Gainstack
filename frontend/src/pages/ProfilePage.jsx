@@ -31,7 +31,7 @@ export default function ProfilePage() {
 
   const navItems = [
     { key: "home", icon: Home, label: "Home", path: "/homepage" },
-    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/exercises-page" },
+    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/workout-page" },
     { key: "profile", icon: User, label: "Profile", path: "/profile-page" },
   ];
 

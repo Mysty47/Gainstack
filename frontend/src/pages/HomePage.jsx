@@ -68,7 +68,7 @@ function PostImage() {
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [liked, setLiked] = useState({});
+  const [liked, setLiked] = useState({}); //trqbva da se vzima ot bazata danni
 
   const toggleLike = (id) => {
     setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -81,7 +81,7 @@ export default function HomePage() {
 
   const navItems = [
     { key: "home", icon: Home, label: "Home", path: "/homepage" },
-    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/exercises-page" },
+    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/workout-page" },
     { key: "profile", icon: User, label: "Profile", path: "/profile-page" },
   ];
 
