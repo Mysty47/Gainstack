@@ -1,24 +1,48 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.AuthResponseDTO;
 import com.example.backend.dto.LoginDTO;
-import com.example.backend.entity.User;
+import com.example.backend.dto.RefreshTokenRequest;
+import com.example.backend.dto.UserDTO;
+import com.example.backend.service.AuthService;
+import com.example.backend.service.JwtService;
 import com.example.backend.service.UserService;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LoginController {
 
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final AuthService authService;
     private final UserService userService;
 
-    public LoginController(UserService userService) {
-        this.userService = userService;
+    @PostMapping("/login")
+    public AuthResponseDTO login(@RequestBody LoginDTO loginDTO) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getEmail(),
+                        loginDTO.getPassword()
+                )
+        );
+
+        String accessToken = jwtService.generateAccessToken(loginDTO.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(loginDTO.getEmail());
+
+        return new AuthResponseDTO(accessToken, refreshToken);
     }
 
-    @PostMapping("/login")
-    public User login(@RequestBody LoginDTO loginDTO) {
-        return userService.login(loginDTO.getEmail(), loginDTO.getPassword());
+    @PostMapping("/refresh")
+    public AuthResponseDTO refresh(@RequestBody RefreshTokenRequest request) {
+        return authService.refresh(request.getRefreshToken());
     }
 }
