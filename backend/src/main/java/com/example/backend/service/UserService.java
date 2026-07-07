@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.SignUpDTO;
+import com.example.backend.dto.UserDTO;
 import com.example.backend.entity.User;
 import com.example.backend.mapper.UserMapper;
 import com.example.backend.repository.UserRepository;
@@ -20,5 +21,18 @@ public class UserService {
         User user = userMapper.toEntity(signUpDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    public UserDTO getCurrentUser(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+
+        return dto;
     }
 }
