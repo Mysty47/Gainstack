@@ -4,10 +4,8 @@ import com.example.backend.dto.WorkoutDTO;
 import com.example.backend.dto.WorkoutExerciseDTO;
 import com.example.backend.dto.WorkoutResponseDTO;
 import com.example.backend.dto.WorkoutSetDTO;
-import com.example.backend.entity.User;
-import com.example.backend.entity.Workout;
-import com.example.backend.entity.WorkoutExercise;
-import com.example.backend.entity.WorkoutSet;
+import com.example.backend.entity.*;
+import com.example.backend.repository.ExerciseRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +20,7 @@ import java.util.List;
 public class WorkoutService {
 
     private final WorkoutRepository workoutRepository;
+    private final ExerciseRepository exerciseRepository;
 
     public WorkoutResponseDTO createWorkout(WorkoutDTO dto, User user) {
 
@@ -35,7 +34,11 @@ public class WorkoutService {
         for (WorkoutExerciseDTO exDto : dto.getExercises()) {
 
             WorkoutExercise ex = new WorkoutExercise();
-            ex.setExerciseId(exDto.getExerciseId());
+
+            Exercise exercise = exerciseRepository.findById(exDto.getExerciseId())
+                    .orElseThrow(() -> new RuntimeException("Exercise not found"));
+
+            ex.setExercise(exercise);
             ex.setWorkout(workout);
 
             List<WorkoutSet> sets = new ArrayList<>();
