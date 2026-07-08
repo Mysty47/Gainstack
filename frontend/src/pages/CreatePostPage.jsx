@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ImagePlus } from "lucide-react";
+import api from "../api/axios.js";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -24,16 +25,12 @@ export default function CreatePostPage() {
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/workouts");
+        const response = await api.get("/workouts");
 
-        if (!response.ok) {
-          throw new Error("Failed to load workouts.");
-        }
+        setWorkouts(response.data);
 
-        const data = await response.json();
-        setWorkouts(data);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to load workouts:", err);
       }
     };
 

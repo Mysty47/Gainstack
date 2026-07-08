@@ -1,7 +1,7 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.SignUpDTO;
-import com.example.backend.dto.UserResponseDTO;
+import com.example.backend.dto.userDTOs.SignUpDTO;
+import com.example.backend.dto.userDTOs.UserResponseDTO;
 import com.example.backend.mapper.UserMapper;
 import com.example.backend.service.UserService;
 import lombok.RequiredArgsConstructor;

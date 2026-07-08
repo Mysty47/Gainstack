@@ -1,15 +1,12 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.AuthResponseDTO;
-import com.example.backend.dto.LoginDTO;
-import com.example.backend.dto.RefreshTokenRequest;
-import com.example.backend.dto.UserDTO;
+import com.example.backend.dto.authDTOs.AuthResponseDTO;
+import com.example.backend.dto.userDTOs.LoginDTO;
+import com.example.backend.dto.authDTOs.RefreshTokenRequest;
 import com.example.backend.service.AuthService;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

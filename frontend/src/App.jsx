@@ -9,6 +9,8 @@ import WorkoutCreationPage from "./pages/WorkoutCreationPage";
 import CreatePostPage from "./pages/CreatePostPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import LikedPostPage from "./pages/LikedPostsPage.jsx";
+import PublicRoute from "./components/PublicRoute.jsx";
 
 
 function App() {
@@ -16,8 +18,23 @@ function App() {
       <BrowserRouter>
         <Routes>
 
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+            <Route
+                path="/login"
+                element={
+                    <PublicRoute>
+                        <LoginPage />
+                    </PublicRoute>
+                }
+            />
+
+            <Route
+                path="/signup"
+                element={
+                    <PublicRoute>
+                        <SignupPage />
+                    </PublicRoute>
+                }
+            />
 
           <Route
               path="/homepage"
@@ -51,6 +68,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <WorkoutCreationPage />
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/liked-posts"
+              element={
+                <ProtectedRoute>
+                  <LikedPostPage />
                 </ProtectedRoute>
               }
           />

@@ -1,6 +1,6 @@
 package com.example.backend.datagenerator;
 
-import com.example.backend.entity.Exercise;
+import com.example.backend.entity.workoutEntities.Exercise;
 import com.example.backend.repository.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
