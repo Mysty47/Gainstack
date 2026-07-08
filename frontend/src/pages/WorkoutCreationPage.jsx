@@ -41,6 +41,8 @@ export default function CreateWorkoutPage() {
   const [library, setLibrary] = useState([]);
   const [title, setTitle] = useState("");
 
+  const [showResults, setShowResults] = useState(false);
+
   const [workoutDate, setWorkoutDate] = useState(
       new Date().toISOString().split("T")[0]
   );
@@ -53,43 +55,48 @@ export default function CreateWorkoutPage() {
   const [filterMuscleGroup, setFilterMuscleGroup] = useState("All");
   const [filterEquipment, setFilterEquipment] = useState("All");
 
-  const results = useMemo(() => library, [library]);
+  const results = useMemo(() => {
+    return library.filter((exercise) => {
+      const matchesName = exercise.name
+          .toLowerCase()
+          .includes(query.toLowerCase());
+
+      const matchesMuscle =
+          filterMuscleGroup === "All" ||
+          exercise.muscleGroup === filterMuscleGroup;
+
+      const matchesEquipment =
+          filterEquipment === "All" ||
+          exercise.equipment === filterEquipment;
+
+      return matchesName && matchesMuscle && matchesEquipment;
+    });
+  }, [library, query, filterMuscleGroup, filterEquipment]);
 
   useEffect(() => {
-    if (!query.trim()) {
-      setLibrary([]);
-      return;
-    }
-    const timeout = setTimeout(async () => {
-      try {
-        const params = new URLSearchParams({ q: query });
-        if (filterMuscleGroup !== "All") params.set("muscleGroup", filterMuscleGroup);
-        if (filterEquipment !== "All") params.set("equipment", filterEquipment);
+    if (!showResults) return;
 
-        // NOTE: backend doesn't filter by muscleGroup/equipment yet —
-        // these params are sent already so the endpoint can pick them up
-        // once that filtering logic is added server-side.
-        const response = await fetch(
-          `http://localhost:8080/api/exercises?${params.toString()}`
-        );
-        if (!response.ok) throw new Error("Search failed");
-        const data = await response.json();
-        setLibrary(data.slice(0, 6));
+    const fetchExercises = async () => {
+      try {
+        const response = await api.get("/api/exercises");
+        setLibrary(response.data);
       } catch (err) {
         console.error(err);
-        setLibrary([]);
       }
-    }, 300); // debounce so we don't fire a request on every keystroke
+    };
 
-    return () => clearTimeout(timeout);
-  }, [query, filterMuscleGroup, filterEquipment]);
+    fetchExercises();
+  }, [showResults]);
 
   const addExerciseToWorkout = (exercise) => {
+    console.log("Clicked:", exercise);
     setWorkoutExercises((prev) => [
       ...prev,
       { ...exercise, sets: [makeEmptySet()] },
     ]);
+
     setQuery("");
+    setShowResults(false);
   };
 
   const removeExercise = (index) => {
@@ -133,7 +140,6 @@ export default function CreateWorkoutPage() {
       muscleGroup: newMuscleGroup,
       equipment: newEquipment,
     };
-    setLibrary((prev) => [...prev, exercise]);
     addExerciseToWorkout(exercise);
     setNewName("");
     setNewMuscleGroup(MUSCLE_GROUPS[0]);
@@ -187,7 +193,7 @@ export default function CreateWorkoutPage() {
 
   const navItems = [
     { key: "home", icon: Home, label: "Home", path: "/homepage" },
-    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/exercises-page" },
+    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/workout-page" },
     { key: "profile", icon: User, label: "Profile", path: "/profile-page" },
   ];
 
@@ -241,13 +247,17 @@ export default function CreateWorkoutPage() {
             </label>
 
         {/* search bar */}
-        <div className="mb-2 relative">
+        <div
+          className="relative"
+          style={{
+            marginBottom: results.length > 0 ? `${results.length * 52 + 16}px` : "8px",
+          }}
+        >
           <div className="flex items-center gap-3 mb-3">
             <label
               className="text-[11px] tracking-[0.2em] uppercase"
               style={{ color: COLORS.subtext }}
             >
-              Add Exercise
             </label>
             <select
               value={filterMuscleGroup}
@@ -320,6 +330,10 @@ export default function CreateWorkoutPage() {
               <input
                   type="text"
                   value={query}
+                  onFocus={() => setShowResults(true)}
+                  onBlur={() => {
+                    setTimeout(() => setShowResults(false), 250);
+                  }}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search exercises..."
                   className="w-full bg-transparent outline-none py-2.5 text-[14px]"
@@ -328,7 +342,7 @@ export default function CreateWorkoutPage() {
             </div>
 
             {/* search results dropdown */}
-            {results.length > 0 && (
+            {showResults && results.length > 0 && (
                 <div
                     className="absolute left-0 right-0 z-10 border border-t-0"
                     style={{
@@ -339,6 +353,7 @@ export default function CreateWorkoutPage() {
                   {results.map((ex) => (
                       <button
                           key={ex.id}
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={() => addExerciseToWorkout(ex)}
                           className="w-full flex items-center justify-between px-3 py-2.5 text-left border-b last:border-b-0"
                           style={{ borderColor: COLORS.hairline }}
@@ -455,7 +470,7 @@ export default function CreateWorkoutPage() {
         {/* save / cancel buttons */}
         <div className="flex gap-3 mt-8">
           <button
-            onClick={() => navigate("/exercises-page")}
+            onClick={() => navigate("/workout-page")}
             className="flex-1 py-3.5 text-[13px] tracking-[0.2em] uppercase border"
             style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
           >

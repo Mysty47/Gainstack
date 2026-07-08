@@ -9,10 +9,9 @@ import com.example.backend.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/workouts")
@@ -31,5 +30,16 @@ public class WorkoutController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return workoutService.createWorkout(dto, user);
+    }
+
+    @GetMapping
+    public List<WorkoutResponseDTO> getWorkouts(Authentication authentication) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return workoutService.getWorkouts(user);
     }
 }

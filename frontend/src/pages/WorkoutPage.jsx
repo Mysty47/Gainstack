@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Plus, History, Home, Dumbbell, User, X } from "lucide-react";
+import api from "../api/axios.js";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -37,7 +38,7 @@ function getMonthGrid(year, month) {
   return cells;
 }
 
-export default function ExercisesPage() {
+export default function WorkoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const today = new Date();
@@ -53,10 +54,10 @@ export default function ExercisesPage() {
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/workouts");
-        if (!response.ok) throw new Error("Failed to fetch workouts");
-        const data = await response.json();
-        setCreatedWorkouts(data);
+        const response = await api.get("/workouts");
+
+        setCreatedWorkouts(response.data);
+
       } catch (err) {
         console.error(err);
         setWorkoutsError("Couldn't load created workouts.");
@@ -64,6 +65,7 @@ export default function ExercisesPage() {
         setLoadingWorkouts(false);
       }
     };
+
     fetchWorkouts();
   }, []);
 
@@ -124,7 +126,7 @@ export default function ExercisesPage() {
 
   const navItems = [
     { key: "home", icon: Home, label: "Home", path: "/homepage" },
-    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/exercises-page" },
+    { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/workout-page" },
     { key: "profile", icon: User, label: "Profile", path: "/profile-page" },
   ];
 
@@ -181,7 +183,7 @@ export default function ExercisesPage() {
               className="text-xs tracking-[0.15em] uppercase text-center"
               style={{ color: COLORS.text }}
             >
-              Previous
+              Saved
               <br />
               Workouts
             </span>

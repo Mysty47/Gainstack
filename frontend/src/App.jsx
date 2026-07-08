@@ -4,11 +4,12 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
-import ExercisesPage from "./pages/ExercisesPage";
+import ExercisesPage from "./pages/WorkoutPage.jsx";
 import WorkoutCreationPage from "./pages/WorkoutCreationPage";
 import CreatePostPage from "./pages/CreatePostPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import LikedPostPage from "./pages/LikedPostsPage.jsx";
 
 
 function App() {
@@ -38,7 +39,7 @@ function App() {
           />
 
           <Route
-              path="/exercises-page"
+              path="/workout-page"
               element={
                 <ProtectedRoute>
                   <ExercisesPage />
@@ -51,6 +52,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <WorkoutCreationPage />
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/liked-posts"
+              element={
+                <ProtectedRoute>
+                  <LikedPostPage />
                 </ProtectedRoute>
               }
           />
