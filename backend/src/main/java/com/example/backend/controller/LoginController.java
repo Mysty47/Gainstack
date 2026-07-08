@@ -7,11 +7,13 @@ import com.example.backend.service.AuthService;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -35,11 +37,14 @@ public class LoginController {
         String accessToken = jwtService.generateAccessToken(loginDTO.getEmail());
         String refreshToken = jwtService.generateRefreshToken(loginDTO.getEmail());
 
+        log.info("Login Called");
+
         return new AuthResponseDTO(accessToken, refreshToken);
     }
 
     @PostMapping("/refresh")
     public AuthResponseDTO refresh(@RequestBody RefreshTokenRequest request) {
+        log.info("Refresh Called");
         return authService.refresh(request.getRefreshToken());
     }
 }
