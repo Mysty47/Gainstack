@@ -44,21 +44,29 @@ public class SecurityConfig {
                 // Disable CSRF
                 .csrf(AbstractHttpConfigurer::disable)
 
+                // Configure endpoint authorization
                 .authorizeHttpRequests(auth -> auth
 
                         // Public endpoints
                         .requestMatchers("/auth/**").permitAll()
 
-                        // All other endpoints require JWT
+                        // Role-based endpoints
+                        .requestMatchers("/auth/user/**").hasAuthority("USER")
+                        .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")
+
+                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
 
+                // Stateless session (required for JWT)
                 .sessionManagement(sess ->
                         sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
+                // Set custom authentication provider
                 .authenticationProvider(authenticationProvider())
 
+                // Add JWT filter before Spring Security's default filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

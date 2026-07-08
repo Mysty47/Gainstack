@@ -181,7 +181,7 @@ export default function WorkoutPage() {
               className="text-xs tracking-[0.15em] uppercase text-center"
               style={{ color: COLORS.text }}
             >
-              Previous
+              Saved
               <br />
               Workouts
             </span>

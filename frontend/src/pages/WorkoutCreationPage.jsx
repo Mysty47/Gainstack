@@ -89,6 +89,7 @@ export default function CreateWorkoutPage() {
   }, [showResults]);
 
   const addExerciseToWorkout = (exercise) => {
+    console.log("Clicked:", exercise);
     setWorkoutExercises((prev) => [
       ...prev,
       { ...exercise, sets: [makeEmptySet()] },
@@ -331,7 +332,7 @@ export default function CreateWorkoutPage() {
                   value={query}
                   onFocus={() => setShowResults(true)}
                   onBlur={() => {
-                    setTimeout(() => setShowResults(false), 150);
+                    setTimeout(() => setShowResults(false), 250);
                   }}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search exercises..."
@@ -352,6 +353,7 @@ export default function CreateWorkoutPage() {
                   {results.map((ex) => (
                       <button
                           key={ex.id}
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={() => addExerciseToWorkout(ex)}
                           className="w-full flex items-center justify-between px-3 py-2.5 text-left border-b last:border-b-0"
                           style={{ borderColor: COLORS.hairline }}
