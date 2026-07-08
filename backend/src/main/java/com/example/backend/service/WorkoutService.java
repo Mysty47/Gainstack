@@ -66,4 +66,25 @@ public class WorkoutService {
 
         return res;
     }
+
+    public List<WorkoutResponseDTO> getWorkouts(User user) {
+
+        List<Workout> workouts = workoutRepository.findByUser(user);
+
+        return workouts.stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
+
+    private WorkoutResponseDTO toResponseDTO(Workout workout) {
+
+        WorkoutResponseDTO dto = new WorkoutResponseDTO();
+
+        dto.setId(workout.getId());
+        dto.setTitle(workout.getTitle());
+        dto.setWorkoutDate(workout.getWorkoutDate());
+
+        return dto;
+    }
 }
