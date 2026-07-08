@@ -133,7 +133,6 @@ export default function CreateWorkoutPage() {
       muscleGroup: newMuscleGroup,
       equipment: newEquipment,
     };
-    setLibrary((prev) => [...prev, exercise]);
     addExerciseToWorkout(exercise);
     setNewName("");
     setNewMuscleGroup(MUSCLE_GROUPS[0]);
@@ -252,7 +251,6 @@ export default function CreateWorkoutPage() {
               className="text-[11px] tracking-[0.2em] uppercase"
               style={{ color: COLORS.subtext }}
             >
-              Add Exercise
             </label>
             <select
               value={filterMuscleGroup}
