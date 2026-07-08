@@ -1,9 +1,8 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.WorkoutDTO;
-import com.example.backend.dto.WorkoutResponseDTO;
+import com.example.backend.dto.workoutDTOs.WorkoutDTO;
+import com.example.backend.dto.workoutDTOs.WorkoutResponseDTO;
 import com.example.backend.entity.User;
-import com.example.backend.entity.Workout;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
