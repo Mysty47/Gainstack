@@ -1,7 +1,5 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, ArrowRight, Check, X, AlertCircle } from "lucide-react";
-import API_URL from "../config/api";
+import { Eye, EyeOff, ArrowRight, Check, X } from "lucide-react";
 import api from "../config/api";
 
 const COLORS = {
@@ -87,26 +85,30 @@ export default function SignupPage() {
         email,
       });
 
-      navigate("/login");
-    } catch (err) {
-      const status = err.response?.status;
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                    email,
+                }),
+            });
 
-      // 409 Conflict is the conventional status for "already exists" -
-      // adjust this if your backend signals it differently (e.g. a specific error code/message)
-      if (status === 409) {
-        setSignupError("An account with that username or email already exists.");
-      } else if (status === 400) {
-        setSignupError(
-          err.response?.data?.message || "Please check your details and try again."
-        );
-      } else {
-        setSignupError("Something went wrong. Please try again.");
-      }
-      console.error("Signup failed:", err);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+            if (response.ok) {
+                console.log("Signup Success");
+            } else {
+                const errorData = await response.json();
+                console.log("Signup Failed:", errorData);
+            }
+
+        } catch (err) {
+            console.error("Network error:", err);
+        }
+    };
 
   return (
     <div

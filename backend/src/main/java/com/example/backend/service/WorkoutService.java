@@ -1,9 +1,6 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.workoutDTOs.WorkoutDTO;
-import com.example.backend.dto.workoutDTOs.WorkoutExerciseDTO;
-import com.example.backend.dto.workoutDTOs.WorkoutResponseDTO;
-import com.example.backend.dto.workoutDTOs.WorkoutSetDTO;
+import com.example.backend.dto.workoutDTOs.*;
 import com.example.backend.entity.*;
 import com.example.backend.entity.workoutEntities.Exercise;
 import com.example.backend.entity.workoutEntities.Workout;
@@ -11,6 +8,7 @@ import com.example.backend.entity.workoutEntities.WorkoutExercise;
 import com.example.backend.entity.workoutEntities.WorkoutSet;
 import com.example.backend.repository.ExerciseRepository;
 import com.example.backend.repository.WorkoutRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,5 +87,39 @@ public class WorkoutService {
         dto.setWorkoutDate(workout.getWorkoutDate());
 
         return dto;
+    }
+
+    public WorkoutDetailsResponseDTO getWorkoutDetails(Long workoutId) {
+
+        Workout workout = workoutRepository.findById(workoutId)
+                .orElseThrow(() -> new EntityNotFoundException("Workout not found"));
+
+
+        List<WorkoutExerciseDTO> exercises = workout.getExercises()
+                .stream()
+                .map(workoutExercise -> {
+
+                    List<WorkoutSetDTO> sets = workoutExercise.getSets()
+                            .stream()
+                            .map(set -> new WorkoutSetDTO(
+                                    set.getReps(),
+                                    set.getWeight()
+                            ))
+                            .toList();
+
+                    return new WorkoutExerciseDTO(
+                            workoutExercise.getExercise().getId(),
+                            workoutExercise.getExercise().getName(),
+                            sets
+                    );
+
+                })
+                .toList();
+
+
+        return new WorkoutDetailsResponseDTO(
+                workout.getId(),
+                exercises
+        );
     }
 }

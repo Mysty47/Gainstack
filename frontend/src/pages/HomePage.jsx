@@ -1,5 +1,6 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import api from "../api/axios"
 import {
   Heart,
   MessageCircle,
@@ -23,39 +24,9 @@ const COLORS = {
   subtext: "#8C8578",
 };
 
-const POSTS = [
-  {
-    id: 1,
-    user: "pguimaraes",
-    time: "13h ago",
-    title: "Full Body 1 — Complete",
-    stats: "59min · 3,610.6 kg · 6 PRs",
-    likes: 24,
-    caption: "A little lazy today, but showed up.",
-  },
-  {
-    id: 2,
-    user: "desmond.k",
-    time: "1d ago",
-    title: "Push Day",
-    stats: "47min · 2,980 kg · 2 PRs",
-    likes: 41,
-    caption: "New bench PR. Felt strong.",
-  },
-  {
-    id: 3,
-    user: "elena_lifts",
-    time: "2d ago",
-    title: "Leg Day",
-    stats: "1h 12min · 4,220 kg",
-    likes: 63,
-    caption: "Squats humbled me today.",
-  },
-];
-
 function PostImage() {
   return (
-    <svg viewBox="0 0 400 400" className="w-full h-auto block" preserveAspectRatio="xMidYMid slice">
+      <svg viewBox="0 0 800 450" className="w-full h-auto block" preserveAspectRatio="xMidYMid slice">
       <rect width="400" height="400" fill={COLORS.panel} />
       <rect width="400" height="400" fill="#1B1912" />
       <circle cx="200" cy="150" r="70" fill={COLORS.goldDim} opacity="0.25" />
@@ -68,7 +39,16 @@ function PostImage() {
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [liked, setLiked] = useState({}); //trqbva da se vzima ot bazata danni
+  const [posts, setPosts] = useState([]);
+  const [liked, setLiked] = useState({});
+
+    useEffect(() => {
+        api.get("/posts")
+            .then((res) => {
+                setPosts(res.data);
+            })
+            .catch(console.error);
+    }, []);
 
   const toggleLike = (id) => {
     setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -229,7 +209,7 @@ export default function HomePage() {
 
         {/* feed */}
         <main className="flex-1 pb-20">
-          {POSTS.map((post) => (
+          {posts.map((post) => (
             <article
               key={post.id}
               className="border-b"
@@ -249,27 +229,33 @@ export default function HomePage() {
                         fontFamily: "'Playfair Display', Georgia, serif",
                       }}
                     >
-                      {post.user.charAt(0).toUpperCase()}
+                      {post.username?.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm" style={{ color: COLORS.text }}>
-                      {post.user}
-                    </p>
+                      <p className="text-sm" style={{ color: COLORS.text }}>
+                          {post.username || "Unknown User"}
+                      </p>
                     <p className="text-[11px]" style={{ color: COLORS.subtext }}>
-                      {post.time}
+                      Workout #{post.workoutId}
                     </p>
                   </div>
                 </div>
                 <MoreHorizontal size={18} style={{ color: COLORS.subtext }} />
               </div>
 
-              {/* narrow image */}
-              <div className="px-4 flex justify-center">
-                <div className="overflow-hidden rounded-sm w-2/3 max-w-[220px]">
-                  <PostImage />
+                {/* Instagram style post image */}
+                <div className="w-full bg-black flex justify-center">
+                    {post.photoUrl ? (
+                        <img
+                            src={post.photoUrl}
+                            alt="post"
+                            className="w-full max-h-[600px] object-contain"
+                        />
+                    ) : (
+                        <PostImage />
+                    )}
                 </div>
-              </div>
 
               {/* workout summary strip */}
               <div
@@ -277,10 +263,7 @@ export default function HomePage() {
                 style={{ backgroundColor: COLORS.panel }}
               >
                 <p className="text-sm" style={{ color: COLORS.goldBright }}>
-                  {post.title}
-                </p>
-                <p className="text-[11px]" style={{ color: COLORS.subtext }}>
-                  {post.stats}
+                  Post #{post.id}
                 </p>
               </div>
 
@@ -295,7 +278,6 @@ export default function HomePage() {
                     />
                   </button>
                   <MessageCircle size={22} style={{ color: COLORS.text }} />
-                  <Send size={20} style={{ color: COLORS.text }} />
                 </div>
                 <Bookmark size={20} style={{ color: COLORS.text }} />
               </div>
@@ -303,11 +285,13 @@ export default function HomePage() {
               {/* likes + caption */}
               <div className="px-4 py-3">
                 <p className="text-sm mb-1" style={{ color: COLORS.text }}>
-                  {post.likes + (liked[post.id] ? 1 : 0)} likes
+                  {liked[post.id] ? 1 : 0} likes
                 </p>
                 <p className="text-sm" style={{ color: COLORS.subtext }}>
-                  <span style={{ color: COLORS.text }}>{post.user}</span>{" "}
-                  {post.caption}
+                  <span style={{ color: COLORS.text }}>
+                    {post.username || "Unknown User"}
+                    </span>{" "}
+                    {post.caption}
                 </p>
               </div>
             </article>
