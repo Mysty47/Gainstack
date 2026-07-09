@@ -1,7 +1,8 @@
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Camera, Pencil, LogOut, Home, Dumbbell, User } from "lucide-react";
+import { Camera, Pencil, LogOut, Shield, Home, Dumbbell, User } from "lucide-react";
 import { clearTokens } from "../auth/tokenService";
-import { getUserFromToken } from "../auth/tokenService";
+import { getCurrentUser } from "../auth/getCurrentUser";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -14,19 +15,33 @@ const COLORS = {
   subtext: "#8C8578",
 };
 
-// // mock user — replace with real data from your auth/session
-// const USER = {
-//   name: "Petar Guimaraes",
-//   email: "petar.guimaraes@example.com",
-// };
-
 export default function ProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = getUserFromToken();
+
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    getCurrentUser()
+      .then((data) => {
+        console.log("getCurrentUser raw response:", data);
+        setUser(data);
+      })
+      .catch((err) => {
+        console.error("getCurrentUser failed:", err);
+        setError("Couldn't load your profile.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const role = localStorage.getItem("role");
+  const isAdmin = role === "ADMIN";
+
   const fields = [
-     { label: "Name", value: user?.name ?? "—" },
-     { label: "Email", value: user?.email ?? "—" },
+    { label: "Name", value: user?.username ?? "—" },
+    { label: "Email", value: user?.email ?? "—" },
   ];
 
   const navItems = [
@@ -62,6 +77,17 @@ export default function ProfilePage() {
       </header>
 
       <main className="flex-1 px-5 pt-8 pb-24 flex flex-col items-center">
+        {loading && (
+          <p className="text-[13px] mb-6" style={{ color: COLORS.subtext }}>
+            Loading profile...
+          </p>
+        )}
+        {error && (
+          <p className="text-[13px] mb-6" style={{ color: "#C97A6A" }}>
+            {error}
+          </p>
+        )}
+
         {/* avatar */}
         <div className="relative mb-5">
           <div
@@ -75,7 +101,7 @@ export default function ProfilePage() {
                 fontFamily: "'Playfair Display', Georgia, serif",
               }}
             >
-              {user?.name?.charAt(0) ?? "?"}
+              {user?.username?.charAt(0) ?? "?"}
             </span>
           </div>
           <button
@@ -94,7 +120,7 @@ export default function ProfilePage() {
             fontFamily: "'Playfair Display', Georgia, serif",
           }}
         >
-          {user?.name}
+          {user?.username ?? "—"}
         </h2>
         <p
           className="text-[11px] tracking-[0.2em] uppercase mb-8"
@@ -136,9 +162,25 @@ export default function ProfilePage() {
           ))}
         </div>
 
+        {/* admin panel (only visible to admins) */}
+        {isAdmin && (
+          <button
+            onClick={() => navigate("/admin-page")}
+            className="w-full max-w-md flex items-center justify-center gap-2 py-3.5 mt-8 border text-[13px] tracking-[0.2em] uppercase transition-colors"
+            style={{ borderColor: COLORS.gold, color: COLORS.goldBright }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1C1A16")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+          >
+            <Shield size={15} />
+            Admin Panel
+          </button>
+        )}
+
         {/* logout */}
         <button
-          className="w-full max-w-md flex items-center justify-center gap-2 py-3.5 mt-8 border text-[13px] tracking-[0.2em] uppercase transition-colors"
+          className={`w-full max-w-md flex items-center justify-center gap-2 py-3.5 ${
+            isAdmin ? "mt-3" : "mt-8"
+          } border text-[13px] tracking-[0.2em] uppercase transition-colors`}
           style={{ borderColor: COLORS.hairline, color: COLORS.subtext }}
           onClick={handleLogout}
           onMouseEnter={(e) => {
