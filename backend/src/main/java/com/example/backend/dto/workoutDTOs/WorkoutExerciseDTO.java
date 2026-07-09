@@ -6,6 +6,8 @@ import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class WorkoutExerciseDTO {
 
     private Long exerciseId;
