@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Eye, EyeOff, ArrowRight, Check, X } from "lucide-react";
 import api from "../config/api";
+import {useNavigate} from "react-router-dom";
 
 const COLORS = {
     bg: "#0A0A0B",
