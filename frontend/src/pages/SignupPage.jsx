@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { Eye, EyeOff, ArrowRight, Check, X } from "lucide-react";
-import API_URL from "../config/api";
 import api from "../config/api";
 
 const COLORS = {
@@ -73,17 +72,25 @@ export default function SignupPage() {
         if (!formValid) return;
 
         try {
-            const response = await api.post("/auth/signup", {
-                username,
-                password,
-                email
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                    email,
+                }),
             });
 
             if (response.ok) {
                 console.log("Signup Success");
             } else {
-                console.log("Signup Failed");
+                const errorData = await response.json();
+                console.log("Signup Failed:", errorData);
             }
+
         } catch (err) {
             console.error("Network error:", err);
         }

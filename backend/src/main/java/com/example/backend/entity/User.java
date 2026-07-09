@@ -23,6 +23,7 @@ public class User {
     private String username;
     private String password;
     private String email;
+    private String role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Workout> workouts = new ArrayList<>();

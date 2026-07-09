@@ -9,5 +9,6 @@ import java.util.List;
 public class WorkoutExerciseDTO {
 
     private Long exerciseId;
+    private String exerciseName;
     private List<WorkoutSetDTO> sets;
 }
