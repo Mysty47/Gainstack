@@ -1,5 +1,6 @@
 package com.example.backend.entity.workoutEntities;
 
+import com.example.backend.entity.Post;
 import com.example.backend.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,4 +32,9 @@ public class Workout {
 
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<WorkoutExercise> exercises;
+
+    @OneToMany(
+            mappedBy = "workout"
+    )
+    private List<Post> posts = new ArrayList<>();
 }
