@@ -106,7 +106,7 @@ export default function CreatePostPage() {
           Create Post
         </h1>
 
-        {/* Description */}
+        {/* Caption */}
         <div
           className="border p-5 mb-5"
           style={{
@@ -118,7 +118,7 @@ export default function CreatePostPage() {
             className="block mb-3 uppercase text-xs tracking-[0.2em]"
             style={{ color: COLORS.subtext }}
           >
-            Description
+            Caption
           </label>
 
           <textarea
