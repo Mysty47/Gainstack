@@ -34,6 +34,8 @@ function getPasswordStrength(checks) {
 }
 
 export default function SignupPage() {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,6 +45,8 @@ export default function SignupPage() {
   const [focused, setFocused] = useState(null);
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [signupError, setSignupError] = useState("");
 
   const emailValid = useMemo(() => EMAIL_REGEX.test(email), [email]);
   const passwordChecks = useMemo(() => getPasswordChecks(password), [password]);
@@ -65,11 +69,21 @@ export default function SignupPage() {
     setTouched((t) => ({ ...t, [field]: true }));
   };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitted(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setSignupError("");
 
-        if (!formValid) return;
+    if (!formValid) return;
+
+    setSubmitting(true);
+    try {
+      // axios only resolves on a 2xx response, so reaching here means signup succeeded
+      await api.post("/auth/signup", {
+        username,
+        password,
+        email,
+      });
 
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
@@ -151,6 +165,19 @@ export default function SignupPage() {
           style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
         >
           <form onSubmit={handleSubmit} noValidate className="space-y-5 sm:space-y-6">
+            {/* signup error banner */}
+            {signupError && (
+              <div
+                className="flex items-start gap-2 px-3 py-2.5 border"
+                style={{ borderColor: COLORS.error, backgroundColor: "rgba(201,122,106,0.08)" }}
+              >
+                <AlertCircle size={14} style={{ color: COLORS.error, marginTop: 2 }} />
+                <p className="text-[12px]" style={{ color: COLORS.error }}>
+                  {signupError}
+                </p>
+              </div>
+            )}
+
             {/* username */}
             <div>
               <label
@@ -369,15 +396,17 @@ export default function SignupPage() {
             {/* submit */}
             <button
               type="submit"
+              disabled={submitting}
               className="group w-full flex items-center justify-center gap-2 py-3.5 mt-2 text-[13px] tracking-[0.2em] uppercase transition-colors"
               style={{
                 backgroundColor: formValid ? COLORS.gold : COLORS.goldDim,
                 color: COLORS.bg,
                 fontWeight: 600,
-                opacity: formValid ? 1 : 0.7,
+                opacity: submitting ? 0.7 : formValid ? 1 : 0.7,
               }}
               onMouseEnter={(e) => {
-                if (formValid) e.currentTarget.style.backgroundColor = COLORS.goldBright;
+                if (formValid && !submitting)
+                  e.currentTarget.style.backgroundColor = COLORS.goldBright;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = formValid
@@ -385,11 +414,13 @@ export default function SignupPage() {
                   : COLORS.goldDim;
               }}
             >
-              Create Account
-              <ArrowRight
-                size={14}
-                className="transition-transform group-hover:translate-x-1"
-              />
+              {submitting ? "Creating Account…" : "Create Account"}
+              {!submitting && (
+                <ArrowRight
+                  size={14}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              )}
             </button>
           </form>
         </div>

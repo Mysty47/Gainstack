@@ -11,7 +11,7 @@ import ShowWorkoutPage from './pages/ShowWorkout'
 import ProtectedRoute from "./components/ProtectedRoute";
 import LikedPostPage from "./pages/LikedPostsPage.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
-
+import SavedWorkoutsPage from "./pages/SavedWorkoutsPage"
 
 function App() {
   return (
@@ -46,6 +46,14 @@ function App() {
           />
 
           <Route
+                        path="/liked-posts"
+                        element={
+                          <ProtectedRoute>
+                            <LikedPostPage />
+                          </ProtectedRoute>
+                        }
+                    />
+          <Route
               path="/profile-page"
               element={
                 <ProtectedRoute>
@@ -73,15 +81,6 @@ function App() {
           />
 
           <Route
-              path="/liked-posts"
-              element={
-                <ProtectedRoute>
-                  <LikedPostPage />
-                </ProtectedRoute>
-              }
-          />
-
-          <Route
               path="/create-post"
               element={
                 <ProtectedRoute>
@@ -91,7 +90,17 @@ function App() {
           />
 
           <Route
-                        path="/show-workout"
+              path="/saved-workouts"
+              element={
+                <ProtectedRoute>
+                  <SavedWorkoutsPage />
+                </ProtectedRoute>
+              }
+          />
+
+
+          <Route
+                        path="/workout/:workoutId"
                         element={
                           <ProtectedRoute>
                             <ShowWorkoutPage />
