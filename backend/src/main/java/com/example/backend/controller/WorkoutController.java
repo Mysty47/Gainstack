@@ -1,18 +1,19 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.WorkoutDTO;
-import com.example.backend.dto.WorkoutResponseDTO;
+import com.example.backend.dto.workoutDTOs.WorkoutDTO;
+import com.example.backend.dto.workoutDTOs.WorkoutResponseDTO;
 import com.example.backend.entity.User;
-import com.example.backend.entity.Workout;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/workouts")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,6 +30,7 @@ public class WorkoutController {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        log.info("Workout Creation Called");
         return workoutService.createWorkout(dto, user);
     }
 
@@ -40,6 +42,7 @@ public class WorkoutController {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        log.info("Workouts Fetch Called");
         return workoutService.getWorkouts(user);
     }
 }

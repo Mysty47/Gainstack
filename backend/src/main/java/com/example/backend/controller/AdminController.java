@@ -1,8 +1,7 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.UserDTO;
+import com.example.backend.dto.userDTOs.UserDTO;
 import com.example.backend.service.UserService;
-import com.example.backend.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

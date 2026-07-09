@@ -1,6 +1,6 @@
 package com.example.backend.repository;
 
-import com.example.backend.entity.Exercise;
+import com.example.backend.entity.workoutEntities.Exercise;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

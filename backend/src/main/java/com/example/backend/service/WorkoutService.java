@@ -1,12 +1,15 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.WorkoutDTO;
-import com.example.backend.dto.WorkoutExerciseDTO;
-import com.example.backend.dto.WorkoutResponseDTO;
-import com.example.backend.dto.WorkoutSetDTO;
+import com.example.backend.dto.workoutDTOs.WorkoutDTO;
+import com.example.backend.dto.workoutDTOs.WorkoutExerciseDTO;
+import com.example.backend.dto.workoutDTOs.WorkoutResponseDTO;
+import com.example.backend.dto.workoutDTOs.WorkoutSetDTO;
 import com.example.backend.entity.*;
+import com.example.backend.entity.workoutEntities.Exercise;
+import com.example.backend.entity.workoutEntities.Workout;
+import com.example.backend.entity.workoutEntities.WorkoutExercise;
+import com.example.backend.entity.workoutEntities.WorkoutSet;
 import com.example.backend.repository.ExerciseRepository;
-import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
