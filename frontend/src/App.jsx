@@ -10,13 +10,86 @@ import LikedPostsPage from "./pages/LikedPostsPage";
 import AdminPage from "./pages/AdminPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import LikedPostPage from "./pages/LikedPostsPage.jsx";
+import PublicRoute from "./components/PublicRoute.jsx";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+      <BrowserRouter>
+        <Routes>
+
+            <Route
+                path="/login"
+                element={
+                    <PublicRoute>
+                        <LoginPage />
+                    </PublicRoute>
+                }
+            />
+
+            <Route
+                path="/signup"
+                element={
+                    <PublicRoute>
+                        <SignupPage />
+                    </PublicRoute>
+                }
+            />
+
+          <Route
+              path="/homepage"
+              element={
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/profile-page"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/workout-page"
+              element={
+                <ProtectedRoute>
+                  <ExercisesPage />
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/workout-creation-page"
+              element={
+                <ProtectedRoute>
+                  <WorkoutCreationPage />
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/liked-posts"
+              element={
+                <ProtectedRoute>
+                  <LikedPostPage />
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/create-post"
+              element={
+                <ProtectedRoute>
+                  <CreatePostPage />
+                </ProtectedRoute>
+              }
+          />
+
 
         <Route
           path="/homepage"

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ImagePlus } from "lucide-react";
+import api from "../api/axios.js";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -24,16 +25,12 @@ export default function CreatePostPage() {
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/workouts");
+        const response = await api.get("/workouts");
 
-        if (!response.ok) {
-          throw new Error("Failed to load workouts.");
-        }
+        setWorkouts(response.data);
 
-        const data = await response.json();
-        setWorkouts(data);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to load workouts:", err);
       }
     };
 
@@ -47,32 +44,30 @@ export default function CreatePostPage() {
   };
 
   const handlePost = async () => {
-    try {
-      const formData = new FormData();
 
-      formData.append("description", description);
-      formData.append("workoutId", selectedWorkout);
+    let photoUrl = null;
 
-      if (photo) {
-        formData.append("photo", photo);
-      }
+    if(photo){
+      const data = new FormData();
+      data.append("file", photo);
 
-      const response = await fetch("http://localhost:8080/api/posts", {
-        method: "POST",
-        body: formData,
-      });
+      const upload = await api.post(
+          "/posts/upload",
+          data
+      );
 
-      if (!response.ok) {
-        throw new Error("Couldn't create post.");
-      }
-
-      alert("Post created!");
-
-      navigate("/homepage");
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong.");
+      photoUrl = upload.data.url;
     }
+
+
+    await api.post("/posts", {
+      caption: description,
+      workoutId: Number(selectedWorkout),
+      photoUrl
+    });
+
+
+    navigate("/homepage");
   };
 
   return (
@@ -109,7 +104,7 @@ export default function CreatePostPage() {
           Create Post
         </h1>
 
-        {/* Description */}
+        {/* Caption */}
         <div
           className="border p-5 mb-5"
           style={{
@@ -121,7 +116,7 @@ export default function CreatePostPage() {
             className="block mb-3 uppercase text-xs tracking-[0.2em]"
             style={{ color: COLORS.subtext }}
           >
-            Description
+            Caption
           </label>
 
           <textarea

@@ -1,7 +1,7 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.SignUpDTO;
-import com.example.backend.dto.UserDTO;
+import com.example.backend.dto.userDTOs.SignUpDTO;
+import com.example.backend.dto.userDTOs.UserDTO;
 import com.example.backend.entity.User;
 import com.example.backend.mapper.UserMapper;
 import com.example.backend.repository.UserRepository;

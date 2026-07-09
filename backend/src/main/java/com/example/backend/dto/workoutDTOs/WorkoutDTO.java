@@ -1,14 +1,17 @@
-package com.example.backend.dto;
+package com.example.backend.dto.workoutDTOs;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
-public class WorkoutResponseDTO {
-    private Long id;
+public class WorkoutDTO {
+
     private String title;
     private LocalDate workoutDate;
+
+    private List<WorkoutExerciseDTO> exercises;
 }
