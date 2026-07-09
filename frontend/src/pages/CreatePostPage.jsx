@@ -44,31 +44,27 @@ export default function CreatePostPage() {
   };
 
   const handlePost = async () => {
+    if (!description.trim()) {
+      alert("Please enter a caption.");
+      return;
+    }
+
+    if (!selectedWorkout) {
+      alert("Please select a workout.");
+      return;
+    }
+
     try {
-      const formData = new FormData();
-
-      formData.append("description", description);
-      formData.append("workoutId", selectedWorkout);
-
-      if (photo) {
-        formData.append("photo", photo);
-      }
-
-      const response = await fetch("http://localhost:8080/api/posts", {
-        method: "POST",
-        body: formData,
+      await api.post("/posts", {
+        caption: description.trim(),
+        workoutId: Number(selectedWorkout),
       });
 
-      if (!response.ok) {
-        throw new Error("Couldn't create post.");
-      }
-
       alert("Post created!");
-
       navigate("/homepage");
     } catch (err) {
       console.error(err);
-      alert("Something went wrong.");
+      alert("Couldn't create post.");
     }
   };
 
