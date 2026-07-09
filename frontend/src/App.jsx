@@ -7,7 +7,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ExercisesPage from "./pages/WorkoutPage.jsx";
 import WorkoutCreationPage from "./pages/WorkoutCreationPage";
 import CreatePostPage from "./pages/CreatePostPage";
-
+import ShowWorkoutPage from './pages/ShowWorkout'
 import ProtectedRoute from "./components/ProtectedRoute";
 import LikedPostPage from "./pages/LikedPostsPage.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
@@ -90,7 +90,14 @@ function App() {
               }
           />
 
-
+          <Route
+                        path="/show-workout"
+                        element={
+                          <ProtectedRoute>
+                            <ShowWorkoutPage />
+                          </ProtectedRoute>
+                        }
+                    />
           {/* Default */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
@@ -98,5 +105,4 @@ function App() {
       </BrowserRouter>
   );
 }
-
 export default App;
