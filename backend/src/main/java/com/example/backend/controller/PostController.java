@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
@@ -28,6 +30,13 @@ public class PostController {
         postService.createPost(request, authentication.getName());
 
         return ResponseEntity.ok("Post created successfully");
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getPosts(Authentication authentication) {
+        log.info("Getting posts Called");
+
+        return ResponseEntity.ok(postService.getAllPosts());
     }
 
     @PostMapping("/upload")
