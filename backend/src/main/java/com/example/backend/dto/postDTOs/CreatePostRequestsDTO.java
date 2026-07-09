@@ -10,4 +10,6 @@ public class CreatePostRequestsDTO {
     private String caption;
 
     private Long workoutId;
+
+    private String photoUrl;
 }

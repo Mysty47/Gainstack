@@ -31,6 +31,7 @@ public class PostService {
         post.setCaption(request.getCaption());
         post.setUser(user);
         post.setWorkout(workout);
+        post.setPhotoUrl(request.getPhotoUrl());
 
         postRepository.save(post);
     }
