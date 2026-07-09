@@ -1,20 +1,19 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.AuthResponseDTO;
-import com.example.backend.dto.LoginDTO;
-import com.example.backend.dto.RefreshTokenRequest;
-import com.example.backend.dto.UserDTO;
+import com.example.backend.dto.authDTOs.AuthResponseDTO;
+import com.example.backend.dto.userDTOs.LoginDTO;
+import com.example.backend.dto.authDTOs.RefreshTokenRequest;
 import com.example.backend.service.AuthService;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -38,11 +37,14 @@ public class LoginController {
         String accessToken = jwtService.generateAccessToken(loginDTO.getEmail());
         String refreshToken = jwtService.generateRefreshToken(loginDTO.getEmail());
 
+        log.info("Login Called");
+
         return new AuthResponseDTO(accessToken, refreshToken);
     }
 
     @PostMapping("/refresh")
     public AuthResponseDTO refresh(@RequestBody RefreshTokenRequest request) {
+        log.info("Refresh Called");
         return authService.refresh(request.getRefreshToken());
     }
 }

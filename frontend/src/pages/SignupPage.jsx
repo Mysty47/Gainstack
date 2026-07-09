@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Eye, EyeOff, ArrowRight, Check, X } from "lucide-react";
 import API_URL from "../config/api";
+import api from "../config/api";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -72,16 +73,10 @@ export default function SignupPage() {
         if (!formValid) return;
 
         try {
-            const response = await fetch(`${API_URL}/auth/signup`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username,
-                    password,
-                    email
-                })
+            const response = await api.post("/auth/signup", {
+                username,
+                password,
+                email
             });
 
             if (response.ok) {

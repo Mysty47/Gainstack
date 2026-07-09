@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 import api from "../api/axios";
 import { setTokens } from "../auth/tokenService";
 
@@ -37,7 +37,6 @@ export default function LoginPage() {
       });
       // save tokens
       setTokens(data.accessToken, data.refreshToken);
-
       navigate("/homepage");
     } catch (err) {
       console.error(err);

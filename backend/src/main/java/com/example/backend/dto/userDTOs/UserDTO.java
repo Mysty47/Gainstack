@@ -1,13 +1,12 @@
-package com.example.backend.dto;
+package com.example.backend.dto.userDTOs;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UserResponseDTO {
-
-    private Long id;
+public class UserDTO {
+    private long id;
     private String username;
     private String email;
 }
