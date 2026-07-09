@@ -1,6 +1,6 @@
 package com.example.backend.config;
 
-import com.example.backend.properties.MinioProperties;
+import com.example.backend.dto.postDTOs.MinioPropertiesDTO;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -10,17 +10,17 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class MinioConfig {
 
-    private final MinioProperties properties;
+    private final MinioPropertiesDTO dto;
 
 
     @Bean
     public MinioClient minioClient() {
 
         return MinioClient.builder()
-                .endpoint(properties.getUrl())
+                .endpoint(dto.getUrl())
                 .credentials(
-                        properties.getAccessKey(),
-                        properties.getSecretKey()
+                        dto.getAccessKey(),
+                        dto.getSecretKey()
                 )
                 .build();
     }

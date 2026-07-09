@@ -1,4 +1,4 @@
-package com.example.backend.properties;
+package com.example.backend.dto.postDTOs;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "minio")
-public class MinioProperties {
+public class MinioPropertiesDTO {
 
     private String url;
     private String accessKey;

@@ -1,6 +1,6 @@
 package com.example.backend.service;
 
-import com.example.backend.properties.MinioProperties;
+import com.example.backend.dto.postDTOs.MinioPropertiesDTO;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.UUID;
 public class MinioService {
 
     private final MinioClient minioClient;
-    private final MinioProperties properties;
+    private final MinioPropertiesDTO dto;
 
 
     public String upload(MultipartFile file) throws Exception {
@@ -25,7 +25,7 @@ public class MinioService {
 
         minioClient.putObject(
                 PutObjectArgs.builder()
-                        .bucket(properties.getBucket())
+                        .bucket(dto.getBucket())
                         .object(filename)
                         .stream(
                                 file.getInputStream(),
@@ -37,9 +37,9 @@ public class MinioService {
         );
 
 
-        return properties.getUrl()
+        return dto.getUrl()
                 + "/"
-                + properties.getBucket()
+                + dto.getBucket()
                 + "/"
                 + filename;
     }
