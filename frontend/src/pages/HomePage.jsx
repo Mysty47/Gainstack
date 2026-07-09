@@ -136,6 +136,18 @@ export default function HomePage() {
                    active ? COLORS.gold : COLORS.hairline
                  }`,
                }}
+               onMouseEnter={(e) => {
+                 if (!active) {
+                   e.currentTarget.style.backgroundColor = "#242227";
+                   e.currentTarget.style.borderColor = COLORS.gold;
+                 }
+               }}
+               onMouseLeave={(e) => {
+                 if (!active) {
+                   e.currentTarget.style.backgroundColor = "#1B1A1D";
+                   e.currentTarget.style.borderColor = COLORS.hairline;
+                 }
+               }}
              >
                <Icon
                  size={20}
