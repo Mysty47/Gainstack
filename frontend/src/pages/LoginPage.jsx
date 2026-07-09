@@ -30,13 +30,11 @@ export default function LoginPage() {
 
     setError("");
     setLoading(true);
-
     try {
       const { data } = await api.post("/auth/login", {
         email,
         password,
       });
-
       // save tokens
       setTokens(data.accessToken, data.refreshToken);
 
@@ -196,6 +194,7 @@ export default function LoginPage() {
               {/* SUBMIT */}
               <button
                   type="submit"
+                  onClick={() => console.log("Submit button clicked")}
                   disabled={loading}
                   className="group w-full flex items-center justify-center gap-2 py-3.5 text-[13px] tracking-[0.2em] uppercase"
                   style={{

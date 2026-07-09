@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Camera, Pencil, LogOut, Shield, Home, Dumbbell, User } from "lucide-react";
-import { clearTokens, getUserFromToken } from "../auth/tokenService";
+import { clearTokens } from "../auth/tokenService";
+import { getCurrentUser } from "../auth/getCurrentUser";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -17,12 +19,28 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const user = getUserFromToken();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    getCurrentUser()
+      .then((data) => {
+        console.log("getCurrentUser raw response:", data);
+        setUser(data);
+      })
+      .catch((err) => {
+        console.error("getCurrentUser failed:", err);
+        setError("Couldn't load your profile.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   const role = localStorage.getItem("role");
   const isAdmin = role === "ADMIN";
 
   const fields = [
-    { label: "Name", value: user?.name ?? "—" },
+    { label: "Name", value: user?.username ?? "—" },
     { label: "Email", value: user?.email ?? "—" },
   ];
 
@@ -59,6 +77,17 @@ export default function ProfilePage() {
       </header>
 
       <main className="flex-1 px-5 pt-8 pb-24 flex flex-col items-center">
+        {loading && (
+          <p className="text-[13px] mb-6" style={{ color: COLORS.subtext }}>
+            Loading profile...
+          </p>
+        )}
+        {error && (
+          <p className="text-[13px] mb-6" style={{ color: "#C97A6A" }}>
+            {error}
+          </p>
+        )}
+
         {/* avatar */}
         <div className="relative mb-5">
           <div
@@ -72,7 +101,7 @@ export default function ProfilePage() {
                 fontFamily: "'Playfair Display', Georgia, serif",
               }}
             >
-              {user?.name?.charAt(0) ?? "?"}
+              {user?.username?.charAt(0) ?? "?"}
             </span>
           </div>
           <button
@@ -91,7 +120,7 @@ export default function ProfilePage() {
             fontFamily: "'Playfair Display', Georgia, serif",
           }}
         >
-          {user?.name ?? "—"}
+          {user?.username ?? "—"}
         </h2>
         <p
           className="text-[11px] tracking-[0.2em] uppercase mb-8"
