@@ -49,6 +49,9 @@ dependencies {
 //	implementation 'org.flywaydb:flyway-core'
 //	implementation 'org.flywaydb:flyway-database-postgresql'
 
+	// Coobird
+	implementation 'net.coobird:thumbnailator:0.4.20'
+
 	runtimeOnly 'org.postgresql:postgresql'
 }
 
