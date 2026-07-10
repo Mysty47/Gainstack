@@ -24,6 +24,7 @@ public class Post {
             nullable = false
     )
     private User user;
+    private String username;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

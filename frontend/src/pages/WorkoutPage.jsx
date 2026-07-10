@@ -173,6 +173,7 @@ export default function WorkoutPage() {
           </button>
 
           <button
+            onClick={() => navigate("/saved-workouts")}
             className="flex-1 flex flex-col items-center justify-center gap-2 py-6 border transition-colors"
             style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
             onMouseEnter={(e) => (e.currentTarget.style.borderColor = COLORS.gold)}
@@ -305,8 +306,11 @@ export default function WorkoutPage() {
             {createdWorkouts.map((w) => (
               <div
                 key={w.id}
-                className="flex items-center justify-between border px-4 py-3"
+                onClick={() => navigate(`/workout/${w.id}`, { state: { workout: w } })}
+                className="flex items-center justify-between border px-4 py-3 cursor-pointer transition-colors"
                 style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = COLORS.gold)}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = COLORS.hairline)}
               >
                 <p className="text-[14px]" style={{ color: COLORS.text }}>
                   {w.title}

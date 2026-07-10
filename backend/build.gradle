@@ -46,8 +46,11 @@ dependencies {
 	implementation 'io.minio:minio:8.5.12'
 
 	// Flyway
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-database-postgresql'
+//	implementation 'org.flywaydb:flyway-core'
+//	implementation 'org.flywaydb:flyway-database-postgresql'
+
+	// Coobird
+	implementation 'net.coobird:thumbnailator:0.4.20'
 
 	runtimeOnly 'org.postgresql:postgresql'
 }

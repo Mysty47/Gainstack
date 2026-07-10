@@ -132,19 +132,28 @@ export default function CreateWorkoutPage() {
     );
   };
 
-  const createNewExercise = () => {
+  const createNewExercise = async () => {
     if (!newName.trim()) return;
-    const exercise = {
-      id: Date.now(),
-      name: newName.trim(),
-      muscleGroup: newMuscleGroup,
-      equipment: newEquipment,
-    };
-    addExerciseToWorkout(exercise);
-    setNewName("");
-    setNewMuscleGroup(MUSCLE_GROUPS[0]);
-    setNewEquipment(EQUIPMENT_OPTIONS[0]);
-    setShowNewExercise(false);
+
+    try {
+      const response = await api.post("/api/exercises", {
+        name: newName.trim(),
+        muscleGroup: newMuscleGroup,
+        equipment: newEquipment,
+      });
+
+      const createdExercise = response.data;
+
+      addExerciseToWorkout(createdExercise);
+
+      setNewName("");
+      setNewMuscleGroup(MUSCLE_GROUPS[0]);
+      setNewEquipment(EQUIPMENT_OPTIONS[0]);
+      setShowNewExercise(false);
+
+    } catch (error) {
+      console.error("Exercise creation failed:", error);
+    }
   };
 
   const handleSaveWorkout = async () => {

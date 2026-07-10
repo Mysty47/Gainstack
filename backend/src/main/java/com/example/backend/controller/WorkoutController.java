@@ -8,6 +8,7 @@ import com.example.backend.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,5 +45,34 @@ public class WorkoutController {
 
         log.info("Workouts Fetch Called");
         return workoutService.getWorkouts(user);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getWorkout(@PathVariable Long id, Authentication authentication) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return ResponseEntity.ok(
+                workoutService.getWorkoutDetails(id, user)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteWorkout(@PathVariable Long id, Authentication authentication) {
+
+        System.out.println("DELETE ENDPOINT HIT");
+        System.out.println(authentication);
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        workoutService.deleteWorkout(id, user);
+
+        return ResponseEntity.ok().build();
     }
 }
