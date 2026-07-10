@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.util.UUID;
 
 @Service
@@ -19,6 +20,7 @@ public class MinioService {
 
     private final MinioClient minioClient;
     private final MinioPropertiesDTO dto;
+    private final ImageCompressionService imageCompressionService;
 
     @PostConstruct
     public void makeBucketPublic() throws Exception {
@@ -62,19 +64,20 @@ public class MinioService {
 
     public String upload(MultipartFile file) throws Exception {
 
-        String filename =
-                UUID.randomUUID() + "-" + file.getOriginalFilename();
+        byte[] compressedImage = imageCompressionService.compress(file);
+
+        String filename = UUID.randomUUID() + ".jpg";
 
         minioClient.putObject(
                 PutObjectArgs.builder()
                         .bucket(dto.getBucket())
                         .object(filename)
                         .stream(
-                                file.getInputStream(),
-                                file.getSize(),
+                                new ByteArrayInputStream(compressedImage),
+                                compressedImage.length,
                                 -1
                         )
-                        .contentType(file.getContentType())
+                        .contentType("image/jpeg")
                         .build()
         );
 

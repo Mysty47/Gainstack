@@ -89,11 +89,14 @@ public class WorkoutService {
         return dto;
     }
 
-    public WorkoutDetailsResponseDTO getWorkoutDetails(Long workoutId) {
+    public WorkoutDetailsResponseDTO getWorkoutDetails(Long workoutId, User user) {
 
         Workout workout = workoutRepository.findById(workoutId)
                 .orElseThrow(() -> new EntityNotFoundException("Workout not found"));
 
+        if (!workout.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You do not have access to this workout");
+        }
 
         List<WorkoutExerciseDTO> exercises = workout.getExercises()
                 .stream()
@@ -116,10 +119,23 @@ public class WorkoutService {
                 })
                 .toList();
 
-
         return new WorkoutDetailsResponseDTO(
                 workout.getId(),
+                workout.getTitle(),
+                workout.getWorkoutDate(),
                 exercises
         );
+    }
+
+    public void deleteWorkout(Long workoutId, User user) {
+
+        Workout workout = workoutRepository.findById(workoutId)
+                .orElseThrow(() -> new EntityNotFoundException("Workout not found"));
+
+        if (!workout.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You do not have access to this workout");
+        }
+
+        workoutRepository.delete(workout);
     }
 }

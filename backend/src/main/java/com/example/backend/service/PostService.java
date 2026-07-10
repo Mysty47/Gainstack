@@ -53,6 +53,7 @@ public class PostService {
                         post.getPhotoUrl(),
                         post.getUser().getId(),
                         post.getUser().getUsername(),
+                        post.getWorkout().getTitle(),
                         post.getWorkout().getId()
                 ))
                 .toList();

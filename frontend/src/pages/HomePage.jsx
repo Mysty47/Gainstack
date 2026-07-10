@@ -42,6 +42,8 @@ export default function HomePage() {
     const [posts, setPosts] = useState([]);
     // { [postId]: { liked: boolean, likeCount: number } }
     const [likes, setLikes] = useState({});
+    const [liked, setLiked] = useState({});
+    const [saved, setSaved] = useState({});
 
     useEffect(() => {
         api.get("/posts")
@@ -91,6 +93,44 @@ export default function HomePage() {
                     },
                 };
             });
+        }
+    useEffect(() => {
+
+        api.get("/api/saved-workouts")
+            .then((res) => {
+
+                const savedMap = {};
+
+                res.data.forEach(savedWorkout => {
+                    savedMap[savedWorkout.workoutId] = true;
+                });
+
+                setSaved(savedMap);
+
+            })
+            .catch(console.error);
+
+    }, []);
+
+    const toggleLike = (id) => {
+        setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
+    };
+
+    const saveWorkout = async (workoutId) => {
+
+        if (saved[workoutId]) return;
+
+        try {
+
+            await api.post(`/api/saved-workouts/${workoutId}`);
+
+            setSaved((prev) => ({
+                ...prev,
+                [workoutId]: true
+            }));
+
+        } catch(error) {
+            console.error("Saving workout failed:", error);
         }
     };
 
@@ -280,7 +320,7 @@ export default function HomePage() {
                                             {post.username || "Unknown User"}
                                         </p>
                                         <p className="text-[11px]" style={{ color: COLORS.subtext }}>
-                                            Workout #{post.workoutId}
+                                            Workout: {post.workoutTitle}
                                         </p>
                                     </div>
                                 </div>
@@ -322,7 +362,23 @@ export default function HomePage() {
                                     </button>
                                     <MessageCircle size={22} style={{ color: COLORS.text }} />
                                 </div>
-                                <Bookmark size={20} style={{ color: COLORS.text }} />
+                                <button
+                                    onClick={() => saveWorkout(post.workoutId)}
+                                    aria-label="Save workout"
+                                >
+                                    <Bookmark
+                                        size={20}
+                                        className={`transition-transform ${
+                                            saved[post.workoutId] ? "scale-110" : ""
+                                        }`}
+                                        fill={saved[post.workoutId] ? COLORS.gold : "none"}
+                                        style={{
+                                            color: saved[post.workoutId]
+                                                ? COLORS.gold
+                                                : COLORS.text
+                                        }}
+                                    />
+                                </button>
                             </div>
 
                             {/* likes + caption */}

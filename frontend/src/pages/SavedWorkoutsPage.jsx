@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 import api from "../api/axios";
 import {
   ArrowLeft,
@@ -53,36 +54,74 @@ export default function SavedWorkoutsPage() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
 
+  const unsaveWorkout = async (workoutId) => {
+    try {
+      await api.delete(`/api/saved-workouts/${workoutId}`);
+
+      setWorkouts(prev =>
+          prev.filter(w => w.workoutId !== workoutId)
+      );
+
+    } catch(error) {
+      console.error("Failed to unsave workout:", error);
+    }
+  };
+
   useEffect(() => {
     let cancelled = false;
 
     const fetchWorkouts = async () => {
       setLoading(true);
       setError("");
+
       try {
-        const response = await api.get("/workouts");
-        if (!cancelled) setWorkouts(response.data);
+        const response = await api.get("/api/saved-workouts");
+
+        console.log("SAVED RESPONSE:", response.data);
+
+        if (!cancelled) {
+          setWorkouts(response.data);
+        }
+
       } catch (err) {
         console.error("Failed to load saved workouts:", err);
-        if (!cancelled) setError("Couldn't load your saved workouts.");
+
+        if (!cancelled) {
+          setError("Couldn't load your saved workouts.");
+        }
+
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchWorkouts();
+
     return () => {
       cancelled = true;
     };
+
   }, []);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return workouts;
+
     const q = query.trim().toLowerCase();
-    return workouts.filter((w) => w.title?.toLowerCase().includes(q));
+
+    return workouts.filter((w) =>
+        w.workoutTitle?.toLowerCase().includes(q)
+    );
+
   }, [workouts, query]);
 
-  const grouped = useMemo(() => groupByMonth(filtered), [filtered]);
+  const grouped = [
+    {
+      label: "Saved Workouts",
+      workouts: filtered
+    }
+  ];
 
   const navItems = [
     { key: "home", icon: Home, label: "Home", path: "/homepage" },
@@ -164,13 +203,17 @@ export default function SavedWorkoutsPage() {
                   {group.label}
                 </p>
                 <div className="space-y-3">
-                  {group.workouts
-                    .slice()
-                    .sort((a, b) => new Date(b.workoutDate) - new Date(a.workoutDate))
-                    .map((w) => (
+                  {group.workouts.map((w) => (
                       <button
                         key={w.id}
-                        onClick={() => navigate(`/workout/${w.id}`, { state: { workout: w } })}
+                        onClick={() =>
+                            navigate(`/workout/${w.workoutId}`, {
+                              state: {
+                                workout: w,
+                                savedView: true
+                              }
+                            })
+                        }
                         className="w-full flex items-center justify-between border px-4 py-3.5 text-left transition-colors"
                         style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
                         onMouseEnter={(e) => (e.currentTarget.style.borderColor = COLORS.gold)}
@@ -178,20 +221,36 @@ export default function SavedWorkoutsPage() {
                       >
                         <div>
                           <p className="text-[14px] mb-1" style={{ color: COLORS.text }}>
-                            {w.title}
+                            {w.workoutTitle}
                           </p>
+
                           <div className="flex items-center gap-1.5">
-                            <Calendar size={12} style={{ color: COLORS.subtext }} />
+                            <Dumbbell size={12} style={{ color: COLORS.subtext }} />
                             <span className="text-[11px]" style={{ color: COLORS.subtext }}>
-                              {new Date(w.workoutDate).toLocaleDateString("en-US", {
-                                weekday: "short",
-                                month: "short",
-                                day: "numeric",
-                              })}
-                            </span>
+            Workout #{w.workoutId}
+        </span>
                           </div>
                         </div>
-                        <ChevronRight size={16} style={{ color: COLORS.subtext }} />
+
+                        <div className="flex items-center gap-3">
+                          <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                unsaveWorkout(w.workoutId);
+                              }}
+                              aria-label="Unsave workout"
+                          >
+                            <Trash2
+                                size={16}
+                                style={{ color: COLORS.subtext }}
+                            />
+                          </button>
+
+                          <ChevronRight
+                              size={16}
+                              style={{ color: COLORS.subtext }}
+                          />
+                        </div>
                       </button>
                     ))}
                 </div>
