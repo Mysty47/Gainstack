@@ -79,6 +79,7 @@ public class PostService {
                         post.getPhotoUrl(),
                         post.getUser().getId(),
                         post.getUser().getUsername(),
+                        post.getWorkout() != null ? post.getWorkout().getTitle() : null,
                         post.getWorkout() != null ? post.getWorkout().getId() : null
                 ))
                 .toList();
