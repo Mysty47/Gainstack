@@ -48,12 +48,31 @@ public class WorkoutController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getWorkout(
-            @PathVariable Long id
-    ) {
+    public ResponseEntity<?> getWorkout(@PathVariable Long id, Authentication authentication) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         return ResponseEntity.ok(
-                workoutService.getWorkoutDetails(id)
+                workoutService.getWorkoutDetails(id, user)
         );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteWorkout(@PathVariable Long id, Authentication authentication) {
+
+        System.out.println("DELETE ENDPOINT HIT");
+        System.out.println(authentication);
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        workoutService.deleteWorkout(id, user);
+
+        return ResponseEntity.ok().build();
     }
 }

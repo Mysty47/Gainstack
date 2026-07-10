@@ -46,13 +46,14 @@ function App() {
           />
 
           <Route
-                        path="/liked-posts"
-                        element={
-                          <ProtectedRoute>
-                            <LikedPostPage />
-                          </ProtectedRoute>
-                        }
-                    />
+              path="/liked-posts"
+              element={
+              <ProtectedRoute>
+                  <LikedPostPage />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
               path="/profile-page"
               element={

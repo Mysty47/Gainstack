@@ -48,34 +48,37 @@ export default function ShowWorkoutPage() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
-    if (workout) return;
-
     let cancelled = false;
 
     const fetchWorkout = async () => {
-      setLoading(true);
-      setError(null);
       try {
+        setLoading(true);
+
         const response = await api.get(`/workouts/${workoutId}`);
-        if (!cancelled) setWorkout(response.data);
+
+        if (!cancelled) {
+          setWorkout(response.data);
+        }
       } catch (err) {
-        console.error("Failed to load workout:", err);
-        if (!cancelled) setError("Couldn't load this workout.");
+        console.error(err);
+        if (!cancelled) {
+          setError("Couldn't load this workout.");
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    if (workoutId) fetchWorkout();
-    else {
-      setLoading(false);
-      setError("No workout specified.");
+    if (workoutId) {
+      fetchWorkout();
     }
 
     return () => {
       cancelled = true;
     };
-  }, [workoutId, workout]);
+  }, [workoutId]);
 
   const handleDelete = async () => {
     if (!confirmDelete) {
