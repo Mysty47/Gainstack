@@ -40,18 +40,58 @@ export default function HomePage() {
     const navigate = useNavigate();
     const location = useLocation();
     const [posts, setPosts] = useState([]);
-    const [liked, setLiked] = useState({});
+    // { [postId]: { liked: boolean, likeCount: number } }
+    const [likes, setLikes] = useState({});
 
     useEffect(() => {
         api.get("/posts")
             .then((res) => {
                 setPosts(res.data);
+
+                // fetch like status + count for every post once posts load
+                res.data.forEach((post) => {
+                    api
+                        .get(`/posts/${post.id}/likes`)
+                        .then((likeRes) => {
+                            setLikes((prev) => ({ ...prev, [post.id]: likeRes.data }));
+                        })
+                        .catch((err) => console.error("Failed to load like status:", err));
+                });
             })
             .catch(console.error);
     }, []);
 
-    const toggleLike = (id) => {
-        setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
+    const toggleLike = async (postId) => {
+        // optimistic update so the UI feels instant
+        setLikes((prev) => {
+            const current = prev[postId] || { liked: false, likeCount: 0 };
+            return {
+                ...prev,
+                [postId]: {
+                    liked: !current.liked,
+                    likeCount: current.liked ? current.likeCount - 1 : current.likeCount + 1,
+                },
+            };
+        });
+
+        try {
+            const res = await api.post(`/posts/${postId}/likes`);
+            // reconcile with the real server response in case of drift
+            setLikes((prev) => ({ ...prev, [postId]: res.data }));
+        } catch (err) {
+            console.error("Failed to toggle like:", err);
+            // revert on failure
+            setLikes((prev) => {
+                const current = prev[postId] || { liked: false, likeCount: 0 };
+                return {
+                    ...prev,
+                    [postId]: {
+                        liked: !current.liked,
+                        likeCount: current.liked ? current.likeCount - 1 : current.likeCount + 1,
+                    },
+                };
+            });
+        }
     };
 
     const sideNavItems = [
@@ -209,7 +249,10 @@ export default function HomePage() {
 
                 {/* feed */}
                 <main className="flex-1 pb-20">
-                    {posts.map((post) => (
+                    {posts.map((post) => {
+                        const likeState = likes[post.id] || { liked: false, likeCount: 0 };
+
+                        return (
                         <article
                             key={post.id}
                             className="border-b"
@@ -273,8 +316,8 @@ export default function HomePage() {
                                     <button onClick={() => toggleLike(post.id)} aria-label="Like">
                                         <Heart
                                             size={22}
-                                            fill={liked[post.id] ? COLORS.gold : "none"}
-                                            style={{ color: liked[post.id] ? COLORS.gold : COLORS.text }}
+                                            fill={likeState.liked ? COLORS.gold : "none"}
+                                            style={{ color: likeState.liked ? COLORS.gold : COLORS.text }}
                                         />
                                     </button>
                                     <MessageCircle size={22} style={{ color: COLORS.text }} />
@@ -285,7 +328,7 @@ export default function HomePage() {
                             {/* likes + caption */}
                             <div className="px-4 py-3">
                                 <p className="text-sm mb-1" style={{ color: COLORS.text }}>
-                                    {liked[post.id] ? 1 : 0} likes
+                                    {likeState.likeCount} {likeState.likeCount === 1 ? "like" : "likes"}
                                 </p>
                                 <p className="text-sm" style={{ color: COLORS.subtext }}>
                   <span style={{ color: COLORS.text }}>
@@ -295,7 +338,8 @@ export default function HomePage() {
                                 </p>
                             </div>
                         </article>
-                    ))}
+                        );
+                    })}
                 </main>
             </div>
 
