@@ -237,7 +237,7 @@ export default function HomePage() {
                                             {post.username || "Unknown User"}
                                         </p>
                                         <p className="text-[11px]" style={{ color: COLORS.subtext }}>
-                                            Workout #{post.workoutId}
+                                            Workout: {post.workoutTitle}
                                         </p>
                                     </div>
                                 </div>

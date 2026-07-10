@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Getter
 @AllArgsConstructor
 public class PostsResponseDTO {
-
-    private long id;
+    private Long id;
     private String caption;
     private String photoUrl;
     private Long userId;
     private String username;
-    private Long workoutId;
+    private String workoutTitle;
 }

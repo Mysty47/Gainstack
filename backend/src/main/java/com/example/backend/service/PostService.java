@@ -49,7 +49,7 @@ public class PostService {
                         post.getPhotoUrl(),
                         post.getUser().getId(),
                         post.getUser().getUsername(),
-                        post.getWorkout().getId()
+                        post.getWorkout().getTitle()
                 ))
                 .toList();
     }
