@@ -1,6 +1,8 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.postDTOs.MinioPropertiesDTO;
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.SetBucketPolicyArgs;
@@ -20,6 +22,20 @@ public class MinioService {
 
     @PostConstruct
     public void makeBucketPublic() throws Exception {
+
+        boolean bucketExists = minioClient.bucketExists(
+                BucketExistsArgs.builder()
+                        .bucket(dto.getBucket())
+                        .build()
+        );
+
+        if (!bucketExists) {
+            minioClient.makeBucket(
+                    MakeBucketArgs.builder()
+                            .bucket(dto.getBucket())
+                            .build()
+            );
+        }
 
         String policy = """
         {
