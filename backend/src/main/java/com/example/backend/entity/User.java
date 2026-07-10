@@ -1,6 +1,7 @@
 package com.example.backend.entity;
 
 import com.example.backend.entity.workoutEntities.Exercise;
+import com.example.backend.entity.workoutEntities.SavedWorkouts;
 import com.example.backend.entity.workoutEntities.Workout;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -43,4 +44,11 @@ public class User {
     )
     @JsonIgnore
     private List<Exercise> exercises = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<SavedWorkouts> savedWorkouts = new ArrayList<>();
 }

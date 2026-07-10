@@ -46,6 +46,8 @@ export default function ShowWorkoutPage() {
   const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const savedView = location.state?.savedView;
+  const [confirmUnsave, setConfirmUnsave] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,6 +81,24 @@ export default function ShowWorkoutPage() {
       cancelled = true;
     };
   }, [workoutId]);
+
+  const handleUnsave = async () => {
+    if (!confirmUnsave) {
+      setConfirmUnsave(true);
+      return;
+    }
+
+    try {
+      await api.delete(`/api/saved-workouts/${workoutId || workout.id}`);
+
+      navigate("/saved-workouts");
+
+    } catch (err) {
+      console.error("Failed to unsave workout:", err);
+      setError("Couldn't remove saved workout.");
+      setConfirmUnsave(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!confirmDelete) {
@@ -293,30 +313,54 @@ export default function ShowWorkoutPage() {
 
             {/* actions */}
             <div className="flex gap-3 mt-8">
+
+              {!savedView && (
+                  <button
+                      onClick={() =>
+                          navigate(`/edit-workout/${workoutId || workout.id}`, {
+                            state: { workout }
+                          })
+                      }
+                      className="flex-1 py-3.5 flex items-center justify-center gap-2 text-[13px] tracking-[0.2em] uppercase border"
+                      style={{
+                        color: COLORS.text,
+                        borderColor: COLORS.hairline
+                      }}
+                  >
+                    <Pencil size={14} />
+                    Edit
+                  </button>
+              )}
+
               <button
-                onClick={() =>
-                  navigate(`/edit-workout/${workoutId || workout.id}`, { state: { workout } })
+                  onClick={savedView ? handleUnsave : handleDelete}
+                  disabled={deleting}
+                  className="flex-1 py-3.5 flex items-center justify-center gap-2 text-[13px] tracking-[0.2em] uppercase border"
+                  style={{
+                    color: savedView ? COLORS.goldBright : "#D9756C",
+                    borderColor: COLORS.hairline
+                  }}
+              >
+                <Trash2
+                    size={14}
+                    style={{
+                      color: savedView ? COLORS.goldBright : "#D9756C"
+                    }}
+                />
+
+                {savedView
+                    ? confirmUnsave
+                        ? "Confirm Unsave"
+                        : "Unsave"
+                    : deleting
+                        ? "Deleting…"
+                        : confirmDelete
+                            ? "Confirm Delete"
+                            : "Delete"
                 }
-                className="flex-1 py-3.5 flex items-center justify-center gap-2 text-[13px] tracking-[0.2em] uppercase border"
-                style={{ color: COLORS.text, borderColor: COLORS.hairline }}
-              >
-                <Pencil size={14} />
-                Edit
+
               </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="flex-1 py-3.5 flex items-center justify-center gap-2 text-[13px] tracking-[0.2em] uppercase border transition-colors"
-                style={{
-                  color: confirmDelete ? COLORS.bg : "#D9756C",
-                  backgroundColor: confirmDelete ? "#D9756C" : "transparent",
-                  borderColor: confirmDelete ? "#D9756C" : COLORS.hairline,
-                  opacity: deleting ? 0.6 : 1,
-                }}
-              >
-                <Trash2 size={14} />
-                {deleting ? "Deleting…" : confirmDelete ? "Confirm Delete" : "Delete"}
-              </button>
+
             </div>
             {error && workout && (
               <p className="text-[12px] mt-3 text-center" style={{ color: "#D9756C" }}>

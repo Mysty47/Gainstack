@@ -173,10 +173,11 @@ export default function WorkoutPage() {
           </button>
 
           <button
-            className="flex-1 flex flex-col items-center justify-center gap-2 py-6 border transition-colors"
-            style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = COLORS.gold)}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = COLORS.hairline)}
+              onClick={() => navigate("/saved-workouts")}
+              className="flex-1 flex flex-col items-center justify-center gap-2 py-6 border transition-colors"
+              style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = COLORS.gold)}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = COLORS.hairline)}
           >
             <History size={22} style={{ color: COLORS.goldBright }} />
             <span

@@ -12,4 +12,5 @@ public class PostsResponseDTO {
     private Long userId;
     private String username;
     private String workoutTitle;
+    private Long workoutId;
 }
