@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.postDTOs.PostsResponseDTO;
 import com.example.backend.dto.postDTOs.CreatePostRequestsDTO;
 import com.example.backend.service.MinioService;
 import com.example.backend.service.PostService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -49,5 +51,11 @@ public class PostController {
         return ResponseEntity.ok(
                 Map.of("url", url)
         );
+    }
+
+    @GetMapping("/liked")
+    public ResponseEntity<List<PostsResponseDTO>> getLikedPosts(Authentication authentication) {
+        Long userId = postService.getUserIdByEmail(authentication.getName());
+        return ResponseEntity.ok(postService.getLikedPostsForUser(userId));
     }
 }

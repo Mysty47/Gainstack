@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import api from "../api/axios";
 import {
   Heart,
   MessageCircle,
@@ -23,40 +24,31 @@ const COLORS = {
   subtext: "#8C8578",
 };
 
-const POSTS = [
-//   {
-//     id: 1,
-//     user: "pguimaraes",
-//     time: "13h ago",
-//     title: "Full Body 1 — Complete",
-//     stats: "59min · 3,610.6 kg · 6 PRs",
-//     likes: 24,
-//     liked: true,
-//     caption: "A little lazy today, but showed up.",
-//   },
-//   {
-//     id: 2,
-//     user: "desmond.k",
-//     time: "1d ago",
-//     title: "Push Day",
-//     stats: "47min · 2,980 kg · 2 PRs",
-//     likes: 41,
-//     liked: false,
-//     caption: "New bench PR. Felt strong.",
-//   },
-//   {
-//     id: 3,
-//     user: "elena_lifts",
-//     time: "2d ago",
-//     title: "Leg Day",
-//     stats: "1h 12min · 4,220 kg",
-//     likes: 63,
-//     liked: true,
-//     caption: "Squats humbled me today.",
-//   },
-];
+function timeAgo(dateStr) {
+  if (!dateStr) return "";
+  const then = new Date(dateStr).getTime();
+  if (Number.isNaN(then)) return "";
+  const diffMs = Date.now() - then;
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 
-function PostImage() {
+function PostImage({ photoUrl }) {
+  if (photoUrl) {
+    return (
+      <img
+        src={photoUrl}
+        alt=""
+        className="w-full h-auto block object-cover"
+        style={{ aspectRatio: "1 / 1" }}
+      />
+    );
+  }
   return (
     <svg viewBox="0 0 400 400" className="w-full h-auto block" preserveAspectRatio="xMidYMid slice">
       <rect width="400" height="400" fill={COLORS.panel} />
@@ -71,10 +63,53 @@ function PostImage() {
 export default function LikedPostPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [liked, setLiked] = useState({}); //trqbva da se vzima ot bazata danni
 
-  const toggleLike = (id) => {
-    setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  // tracks in-flight optimistic overrides + removals so the UI feels instant
+  const [pendingUnlike, setPendingUnlike] = useState({});
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchLikedPosts = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const response = await api.get("/posts/liked");
+        if (!cancelled) setPosts(response.data);
+      } catch (err) {
+        console.error("Failed to load liked posts:", err);
+        if (!cancelled) setError("Couldn't load your liked posts.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchLikedPosts();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleUnlike = async (postId) => {
+    // optimistic: hide immediately, since this page only shows liked posts
+    setPendingUnlike((prev) => ({ ...prev, [postId]: true }));
+    try {
+      // same toggle endpoint HomePage uses - every post here is already liked,
+      // so calling it always flips to unliked
+      await api.post(`/posts/${postId}/likes`);
+      setPosts((prev) => prev.filter((p) => p.id !== postId));
+    } catch (err) {
+      console.error("Failed to unlike post:", err);
+      // roll back the optimistic hide since the request failed
+      setPendingUnlike((prev) => {
+        const next = { ...prev };
+        delete next[postId];
+        return next;
+      });
+    }
   };
 
   const sideNavItems = [
@@ -87,6 +122,8 @@ export default function LikedPostPage() {
     { key: "exercises", icon: Dumbbell, label: "Exercises", path: "/workout-page" },
     { key: "profile", icon: User, label: "Profile", path: "/profile-page" },
   ];
+
+  const visiblePosts = posts.filter((p) => !pendingUnlike[p.id]);
 
   return (
     <div className="min-h-screen w-full flex" style={{ backgroundColor: COLORS.bg }}>
@@ -233,89 +270,116 @@ export default function LikedPostPage() {
 
         {/* feed */}
         <main className="flex-1 pb-20">
-          {POSTS.filter(post => post.liked).map((post) => (
-            <article
-              key={post.id}
-              className="border-b"
-              style={{ borderColor: COLORS.hairline }}
-            >
-              {/* post header */}
-              <div className="flex items-center justify-between px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center border shrink-0"
-                    style={{ borderColor: COLORS.gold }}
-                  >
-                    <span
-                      className="text-xs"
-                      style={{
-                        color: COLORS.gold,
-                        fontFamily: "'Playfair Display', Georgia, serif",
-                      }}
-                    >
-                      {post.user.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm" style={{ color: COLORS.text }}>
-                      {post.user}
-                    </p>
-                    <p className="text-[11px]" style={{ color: COLORS.subtext }}>
-                      {post.time}
-                    </p>
-                  </div>
-                </div>
-                <MoreHorizontal size={18} style={{ color: COLORS.subtext }} />
-              </div>
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-24 gap-3">
+              <Heart size={22} style={{ color: COLORS.subtext }} className="animate-pulse" />
+              <p className="text-[13px] tracking-[0.1em] uppercase" style={{ color: COLORS.subtext }}>
+                Loading liked posts…
+              </p>
+            </div>
+          )}
 
-              {/* narrow image */}
-              <div className="px-4 flex justify-center">
-                <div className="overflow-hidden rounded-sm w-2/3 max-w-[220px]">
-                  <PostImage />
-                </div>
-              </div>
+          {!loading && error && (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <p className="text-[14px]" style={{ color: COLORS.text }}>
+                {error}
+              </p>
+            </div>
+          )}
 
-              {/* workout summary strip */}
-              <div
-                className="px-4 py-2.5 flex items-center justify-between"
-                style={{ backgroundColor: COLORS.panel }}
+          {!loading && !error && visiblePosts.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-24 gap-2 text-center px-6">
+              <Heart size={22} style={{ color: COLORS.subtext }} />
+              <p className="text-[13px]" style={{ color: COLORS.subtext }}>
+                You haven't liked any posts yet.
+              </p>
+            </div>
+          )}
+
+          {!loading &&
+            !error &&
+            visiblePosts.map((post) => (
+              <article
+                key={post.id}
+                className="border-b"
+                style={{ borderColor: COLORS.hairline }}
               >
-                <p className="text-sm" style={{ color: COLORS.goldBright }}>
-                  {post.title}
-                </p>
-                <p className="text-[11px]" style={{ color: COLORS.subtext }}>
-                  {post.stats}
-                </p>
-              </div>
-
-              {/* actions */}
-              <div className="flex items-center justify-between px-4 pt-3">
-                <div className="flex items-center gap-4">
-                  <button onClick={() => toggleLike(post.id)} aria-label="Like">
-                    <Heart
-                      size={22}
-                      fill={liked[post.id] ? COLORS.gold : "none"}
-                      style={{ color: liked[post.id] ? COLORS.gold : COLORS.text }}
-                    />
-                  </button>
-                  <MessageCircle size={22} style={{ color: COLORS.text }} />
-                  <Send size={20} style={{ color: COLORS.text }} />
+                {/* post header */}
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center border shrink-0"
+                      style={{ borderColor: COLORS.gold }}
+                    >
+                      <span
+                        className="text-xs"
+                        style={{
+                          color: COLORS.gold,
+                          fontFamily: "'Playfair Display', Georgia, serif",
+                        }}
+                      >
+                        {post.username?.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm" style={{ color: COLORS.text }}>
+                        {post.username}
+                      </p>
+                      {post.createdAt && (
+                        <p className="text-[11px]" style={{ color: COLORS.subtext }}>
+                          {timeAgo(post.createdAt)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <MoreHorizontal size={18} style={{ color: COLORS.subtext }} />
                 </div>
-                <Bookmark size={20} style={{ color: COLORS.text }} />
-              </div>
 
-              {/* likes + caption */}
-              <div className="px-4 py-3">
-                <p className="text-sm mb-1" style={{ color: COLORS.text }}>
-                  {post.likes + (liked[post.id] ? 1 : 0)} likes
-                </p>
-                <p className="text-sm" style={{ color: COLORS.subtext }}>
-                  <span style={{ color: COLORS.text }}>{post.user}</span>{" "}
-                  {post.caption}
-                </p>
-              </div>
-            </article>
-          ))}
+                {/* narrow image */}
+                <div className="px-4 flex justify-center">
+                  <div className="overflow-hidden rounded-sm w-2/3 max-w-[220px]">
+                    <PostImage photoUrl={post.photoUrl} />
+                  </div>
+                </div>
+
+                {/* workout summary strip */}
+                {post.workoutTitle && (
+                  <div
+                    className="px-4 py-2.5 flex items-center justify-between"
+                    style={{ backgroundColor: COLORS.panel }}
+                  >
+                    <p className="text-sm" style={{ color: COLORS.goldBright }}>
+                      {post.workoutTitle}
+                    </p>
+                  </div>
+                )}
+
+                {/* actions */}
+                <div className="flex items-center justify-between px-4 pt-3">
+                  <div className="flex items-center gap-4">
+                    <button onClick={() => handleUnlike(post.id)} aria-label="Unlike">
+                      <Heart size={22} fill={COLORS.gold} style={{ color: COLORS.gold }} />
+                    </button>
+                    <MessageCircle size={22} style={{ color: COLORS.text }} />
+                    <Send size={20} style={{ color: COLORS.text }} />
+                  </div>
+                  <Bookmark size={20} style={{ color: COLORS.text }} />
+                </div>
+
+                {/* likes + caption */}
+                <div className="px-4 py-3">
+                  <p className="text-sm mb-1" style={{ color: COLORS.text }}>
+                    {post.likes ?? 0} likes
+                  </p>
+                  {post.caption && (
+                    <p className="text-sm" style={{ color: COLORS.subtext }}>
+                      <span style={{ color: COLORS.text }}>{post.username}</span>{" "}
+                      {post.caption}
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))}
         </main>
       </div>
 
