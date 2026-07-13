@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios"
+import logo from "../assets/logo.png"
 import {
     Heart,
     MessageCircle,
@@ -358,15 +359,23 @@ export default function HomePage() {
                     className="px-6 py-8 border-b"
                     style={{ borderColor: COLORS.hairline }}
                 >
-                    <h2
-                        className="text-xl tracking-[0.2em] uppercase"
-                        style={{
-                            color: COLORS.gold,
-                            fontFamily: "'Playfair Display', Georgia, serif",
-                        }}
-                    >
-                        Gainstack
-                    </h2>
+                    <div className="flex items-center gap-3">
+                        <img
+                            src={logo}
+                            alt="Gainstack"
+                            className="w-10 h-10 object-contain"
+                        />
+
+                        <h2
+                            className="text-xl tracking-[0.15em] uppercase"
+                            style={{
+                                color: COLORS.gold,
+                                fontFamily: "'Playfair Display', Georgia, serif",
+                            }}
+                        >
+                            Gainstack
+                        </h2>
+                    </div>
 
                     <p
                         className="text-xs mt-2 tracking-wide"
@@ -476,12 +485,23 @@ export default function HomePage() {
                     className="sticky top-0 z-10 flex items-center justify-center py-4 border-b"
                     style={{ backgroundColor: COLORS.bg, borderColor: COLORS.hairline }}
                 >
-                    <h1
-                        className="text-lg tracking-[0.2em] uppercase"
-                        style={{ color: COLORS.gold, fontFamily: "'Playfair Display', Georgia, serif" }}
-                    >
-                        Gainstack
-                    </h1>
+                    <div className="flex items-center gap-3">
+                        <img
+                            src={logo}
+                            alt="Gainstack"
+                            className="w-9 h-9 object-contain"
+                        />
+
+                        <h1
+                            className="text-lg tracking-[0.2em] uppercase"
+                            style={{
+                                color: COLORS.gold,
+                                fontFamily: "'Playfair Display', Georgia, serif",
+                            }}
+                        >
+                            Gainstack
+                        </h1>
+                    </div>
                 </header>
 
                 {/* feed */}
