@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ImagePlus } from "lucide-react";
+import { ArrowLeft, ImagePlus, X } from "lucide-react";
 import api from "../api/axios.js";
 
 const COLORS = {
@@ -12,7 +12,10 @@ const COLORS = {
   goldDim: "#327bcf",
   text: "#F3EFE6",
   subtext: "#8C8578",
+  error: "#C97A6A",
 };
+
+const MAX_CAPTION_LENGTH = 250;
 
 export default function CreatePostPage() {
   const navigate = useNavigate();
@@ -21,6 +24,7 @@ export default function CreatePostPage() {
   const [selectedWorkout, setSelectedWorkout] = useState("");
   const [workouts, setWorkouts] = useState([]);
   const [photo, setPhoto] = useState(null);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState(null);
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -37,11 +41,30 @@ export default function CreatePostPage() {
     fetchWorkouts();
   }, []);
 
+  // create/revoke the object URL only when the photo actually changes,
+  // instead of re-creating it (and leaking memory) on every render
+  useEffect(() => {
+    if (!photo) {
+      setPhotoPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(photo);
+    setPhotoPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photo]);
+
   const handlePhoto = (e) => {
     if (e.target.files.length > 0) {
       setPhoto(e.target.files[0]);
     }
   };
+
+  const handleRemovePhoto = () => {
+    setPhoto(null);
+  };
+
+  const remainingChars = MAX_CAPTION_LENGTH - description.length;
+  const nearLimit = remainingChars <= 20;
 
   const handlePost = async () => {
 
@@ -112,16 +135,25 @@ export default function CreatePostPage() {
             borderColor: COLORS.hairline,
           }}
         >
-          <label
-            className="block mb-3 uppercase text-xs tracking-[0.2em]"
-            style={{ color: COLORS.subtext }}
-          >
-            Caption
-          </label>
+          <div className="flex items-center justify-between mb-3">
+            <label
+              className="uppercase text-xs tracking-[0.2em]"
+              style={{ color: COLORS.subtext }}
+            >
+              Caption
+            </label>
+            <span
+              className="text-[11px] tabular-nums"
+              style={{ color: nearLimit ? COLORS.error : COLORS.subtext }}
+            >
+              {description.length}/{MAX_CAPTION_LENGTH}
+            </span>
+          </div>
 
           <textarea
             rows={5}
             value={description}
+            maxLength={MAX_CAPTION_LENGTH}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Share your workout..."
             className="w-full bg-transparent resize-none outline-none"
@@ -190,33 +222,55 @@ export default function CreatePostPage() {
             Photo
           </label>
 
-          <label
-            className="flex flex-col items-center justify-center gap-3 border border-dashed rounded-lg py-10 cursor-pointer transition"
-            style={{
-              borderColor: COLORS.gold,
-              color: COLORS.gold,
-            }}
-          >
-            <ImagePlus size={32} />
+          {!photo && (
+            <label
+              className="flex flex-col items-center justify-center gap-3 border border-dashed rounded-lg py-10 cursor-pointer transition"
+              style={{
+                borderColor: COLORS.gold,
+                color: COLORS.gold,
+              }}
+            >
+              <ImagePlus size={32} />
 
-            <span className="uppercase tracking-[0.15em] text-xs">
-              Choose Image
-            </span>
+              <span className="uppercase tracking-[0.15em] text-xs">
+                Choose Image
+              </span>
 
-            <input
-              hidden
-              type="file"
-              accept="image/*"
-              onChange={handlePhoto}
-            />
-          </label>
+              <input
+                hidden
+                type="file"
+                accept="image/*"
+                onChange={handlePhoto}
+              />
+            </label>
+          )}
 
-          {photo && (
-            <img
-              src={URL.createObjectURL(photo)}
-              alt="Preview"
-              className="mt-5 w-full rounded-lg object-cover max-h-96"
-            />
+          {photo && photoPreviewUrl && (
+            <div className="relative">
+              <img
+                src={photoPreviewUrl}
+                alt="Preview"
+                className="w-full rounded-lg object-cover max-h-96"
+              />
+              <button
+                type="button"
+                onClick={handleRemovePhoto}
+                aria-label="Remove photo"
+                className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                style={{
+                  backgroundColor: "rgba(10,10,11,0.75)",
+                  border: `1px solid ${COLORS.hairline}`,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = COLORS.gold;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = COLORS.hairline;
+                }}
+              >
+                <X size={16} style={{ color: COLORS.text }} />
+              </button>
+            </div>
           )}
         </div>
 
