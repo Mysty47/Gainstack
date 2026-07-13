@@ -11,6 +11,7 @@ import {
     Dumbbell,
     User,
     SquarePen,
+    X,
 } from "lucide-react";
 
 const COLORS = {
@@ -36,6 +37,193 @@ function PostImage() {
     );
 }
 
+function CommentsModal({ post, onClose }) {
+    const [comments, setComments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [newComment, setNewComment] = useState("");
+    const [posting, setPosting] = useState(false);
+
+    useEffect(() => {
+        let cancelled = false;
+        setLoading(true);
+        setError("");
+
+        api
+            .get(`/posts/${post.id}/comments`)
+            .then((res) => {
+                if (!cancelled) setComments(res.data);
+            })
+            .catch((err) => {
+                console.error("Failed to load comments:", err);
+                if (!cancelled) setError("Couldn't load comments.");
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [post.id]);
+
+    const handleAddComment = async () => {
+        const trimmed = newComment.trim();
+        if (!trimmed) return;
+
+        setPosting(true);
+        try {
+            const res = await api.post(`/posts/${post.id}/comments`, {
+                content: trimmed,
+            });
+            setComments((prev) => [...prev, res.data]);
+            setNewComment("");
+        } catch (err) {
+            console.error("Failed to post comment:", err);
+        } finally {
+            setPosting(false);
+        }
+    };
+
+    return (
+        <div
+            className="fixed inset-0 z-40 flex items-center justify-center px-0 sm:px-4"
+            style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+            onClick={onClose}
+        >
+            <div
+                className="w-full sm:max-w-4xl border-t sm:border flex flex-col sm:flex-row"
+                style={{
+                    backgroundColor: COLORS.panel,
+                    borderColor: COLORS.hairline,
+                    height: "85vh",
+                    maxHeight: "700px",
+                }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* photo - left half */}
+                <div
+                    className="w-full sm:w-1/2 bg-black flex items-center justify-center shrink-0"
+                    style={{ maxHeight: "45vh" }}
+                >
+                    {post.photoUrl ? (
+                        <img
+                            src={post.photoUrl}
+                            alt="post"
+                            className="w-full h-full object-cover sm:object-contain"
+                        />
+                    ) : (
+                        <PostImage />
+                    )}
+                </div>
+
+                {/* right half - caption on top, comments scrollable below */}
+                <div className="w-full sm:w-1/2 flex flex-col min-h-0">
+                    {/* header */}
+                    <div
+                        className="flex items-center justify-between px-4 py-3 border-b shrink-0"
+                        style={{ borderColor: COLORS.hairline }}
+                    >
+                        <p
+                            className="text-sm tracking-[0.1em] uppercase"
+                            style={{ color: COLORS.gold }}
+                        >
+                            Comments
+                        </p>
+                        <button onClick={onClose} aria-label="Close">
+                            <X size={18} style={{ color: COLORS.subtext }} />
+                        </button>
+                    </div>
+
+                    {/* caption */}
+                    <div
+                        className="px-4 py-3 border-b shrink-0"
+                        style={{ borderColor: COLORS.hairline }}
+                    >
+                        <p className="text-sm" style={{ color: COLORS.subtext }}>
+                            <span style={{ color: COLORS.text }}>
+                                {post.username || "Unknown User"}
+                            </span>{" "}
+                            {post.caption}
+                        </p>
+                    </div>
+
+                    {/* scrollable comments */}
+                    <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-4">
+                        {loading && (
+                            <p className="text-[13px]" style={{ color: COLORS.subtext }}>
+                                Loading comments...
+                            </p>
+                        )}
+                        {error && (
+                            <p className="text-[13px]" style={{ color: "#C97A6A" }}>
+                                {error}
+                            </p>
+                        )}
+                        {!loading && !error && comments.length === 0 && (
+                            <p className="text-[13px]" style={{ color: COLORS.subtext }}>
+                                No comments yet. Be the first.
+                            </p>
+                        )}
+
+                        {comments.map((comment) => (
+                            <div key={comment.id} className="flex items-start gap-3">
+                                <div
+                                    className="w-7 h-7 rounded-full flex items-center justify-center border shrink-0"
+                                    style={{ borderColor: COLORS.gold }}
+                                >
+                                    <span
+                                        className="text-[11px]"
+                                        style={{
+                                            color: COLORS.gold,
+                                            fontFamily: "'Playfair Display', Georgia, serif",
+                                        }}
+                                    >
+                                        {comment.username?.charAt(0).toUpperCase()}
+                                    </span>
+                                </div>
+                                <p className="text-[13px] leading-snug" style={{ color: COLORS.subtext }}>
+                                    <span style={{ color: COLORS.text }}>
+                                        {comment.username || "Unknown User"}
+                                    </span>{" "}
+                                    {comment.content}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* add comment */}
+                    <div
+                        className="flex items-center gap-2 px-4 py-3 border-t shrink-0"
+                        style={{ borderColor: COLORS.hairline }}
+                    >
+                        <input
+                            type="text"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
+                            placeholder="Add a comment..."
+                            className="flex-1 bg-transparent outline-none text-[14px]"
+                            style={{ color: COLORS.text }}
+                        />
+                        <button
+                            onClick={handleAddComment}
+                            disabled={posting || !newComment.trim()}
+                            className="text-[12px] tracking-[0.1em] uppercase"
+                            style={{
+                                color: newComment.trim() ? COLORS.gold : COLORS.subtext,
+                                opacity: posting ? 0.6 : 1,
+                            }}
+                        >
+                            Post
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function HomePage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -43,6 +231,7 @@ export default function HomePage() {
     // { [postId]: { liked: boolean, likeCount: number } }
     const [likes, setLikes] = useState({});
     const [saved, setSaved] = useState({});
+    const [activeCommentsPost, setActiveCommentsPost] = useState(null);
 
     useEffect(() => {
         api.get("/posts")
@@ -357,7 +546,12 @@ export default function HomePage() {
                                             style={{ color: likeState.liked ? COLORS.gold : COLORS.text }}
                                         />
                                     </button>
-                                    <MessageCircle size={22} style={{ color: COLORS.text }} />
+                                    <button
+                                        onClick={() => setActiveCommentsPost(post)}
+                                        aria-label="Comments"
+                                    >
+                                        <MessageCircle size={22} style={{ color: COLORS.text }} />
+                                    </button>
                                 </div>
                                 <button
                                     onClick={() => saveWorkout(post.workoutId)}
@@ -424,6 +618,13 @@ export default function HomePage() {
                     );
                 })}
             </nav>
+
+            {activeCommentsPost && (
+                <CommentsModal
+                    post={activeCommentsPost}
+                    onClose={() => setActiveCommentsPost(null)}
+                />
+            )}
         </div>
     );
 }
