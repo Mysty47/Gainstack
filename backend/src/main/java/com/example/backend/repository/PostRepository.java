@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.entity.Post;
+import com.example.backend.entity.workoutEntities.Workout;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,5 @@ public interface PostRepository
         ORDER BY l.id DESC
         """)
     List<Post> findLikedPostsByUserId(@Param("userId") Long userId);
+    List<Post> findByWorkout(Workout workout);
 }

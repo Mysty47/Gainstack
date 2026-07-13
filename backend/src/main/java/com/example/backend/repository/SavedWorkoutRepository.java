@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.entity.workoutEntities.SavedWorkouts;
+import com.example.backend.entity.workoutEntities.Workout;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface SavedWorkoutRepository extends JpaRepository<SavedWorkouts, Lon
     boolean existsByUserIdAndWorkoutId(Long userId, Long workoutId);
 
     void deleteByUserIdAndWorkoutId(Long userId, Long workoutId);
+
+    void deleteAllByWorkout(Workout workout);
 }

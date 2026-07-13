@@ -34,7 +34,6 @@ public class Post {
     )
     private Workout workout;
 
-
     @Column(nullable = false)
     private String caption;
 
