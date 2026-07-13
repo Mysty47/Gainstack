@@ -30,6 +30,10 @@ const EQUIPMENT_OPTIONS = [
   "Barbell", "Dumbbell", "Machine", "Cable", "Bodyweight", "Kettlebell", "Bands",
 ];
 
+// how many result rows are visible before the dropdown scrolls
+const MAX_VISIBLE_RESULTS = 5;
+const RESULT_ROW_HEIGHT = 52;
+
 function makeEmptySet() {
   return { id: Date.now() + Math.random(), reps: "", weight: "" };
 }
@@ -255,69 +259,34 @@ export default function CreateWorkoutPage() {
               Workout Date
             </label>
 
+        {/* date input, standalone under Workout Date label */}
+        <div
+          className="flex items-center gap-2 px-3 border mb-8"
+          style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
+        >
+          <Search size={16} style={{ color: COLORS.subtext }} />
+          <input
+              type="date"
+              value={workoutDate}
+              onChange={(e) => setWorkoutDate(e.target.value)}
+              className="w-full bg-transparent outline-none pb-3 text-[15px]"
+              style={{
+                color: COLORS.text,
+                borderBottom: `1px solid ${COLORS.hairline}`
+              }}
+          />
+        </div>
+
         {/* search bar */}
         <div
           className="relative"
           style={{
-            marginBottom: results.length > 0 ? `${results.length * 52 + 16}px` : "8px",
+            marginBottom:
+              showResults && results.length > 0
+                ? `${Math.min(results.length, MAX_VISIBLE_RESULTS) * RESULT_ROW_HEIGHT + 16}px`
+                : "8px",
           }}
         >
-          <div className="flex items-center gap-3 mb-3">
-            <label
-              className="text-[11px] tracking-[0.2em] uppercase"
-              style={{ color: COLORS.subtext }}
-            >
-            </label>
-            <select
-              value={filterMuscleGroup}
-              onChange={(e) => setFilterMuscleGroup(e.target.value)}
-              className="bg-transparent outline-none text-[11px] border-b py-0.5"
-              style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
-            >
-              <option value="All" style={{ backgroundColor: COLORS.panel }}>
-                All Muscles
-              </option>
-              {MUSCLE_GROUPS.map((mg) => (
-                <option key={mg} value={mg} style={{ backgroundColor: COLORS.panel }}>
-                  {mg}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={filterEquipment}
-              onChange={(e) => setFilterEquipment(e.target.value)}
-              className="bg-transparent outline-none text-[11px] border-b py-0.5"
-              style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
-            >
-              <option value="All" style={{ backgroundColor: COLORS.panel }}>
-                All Equipment
-              </option>
-              {EQUIPMENT_OPTIONS.map((eq) => (
-                <option key={eq} value={eq} style={{ backgroundColor: COLORS.panel }}>
-                  {eq}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div
-            className="flex items-center gap-2 px-3 border"
-            style={{ backgroundColor: COLORS.panel, borderColor: COLORS.hairline }}
-          >
-            <Search size={16} style={{ color: COLORS.subtext }} />
-            <input
-                type="date"
-                value={workoutDate}
-                onChange={(e) => setWorkoutDate(e.target.value)}
-                className="w-full bg-transparent outline-none pb-3 text-[15px]"
-                style={{
-                  color: COLORS.text,
-                  borderBottom: `1px solid ${COLORS.hairline}`
-                }}
-            />
-          </div>
-
-
           {/* search bar */}
           <div className="mb-2 relative">
             <label
@@ -326,6 +295,41 @@ export default function CreateWorkoutPage() {
             >
               Add Exercise
             </label>
+
+            {/* filters for the exercise search, placed directly above the search input they affect */}
+            <div className="flex items-center gap-3 mb-3">
+              <select
+                value={filterMuscleGroup}
+                onChange={(e) => setFilterMuscleGroup(e.target.value)}
+                className="bg-transparent outline-none text-[11px] border-b py-0.5"
+                style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
+              >
+                <option value="All" style={{ backgroundColor: COLORS.panel }}>
+                  All Muscles
+                </option>
+                {MUSCLE_GROUPS.map((mg) => (
+                  <option key={mg} value={mg} style={{ backgroundColor: COLORS.panel }}>
+                    {mg}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={filterEquipment}
+                onChange={(e) => setFilterEquipment(e.target.value)}
+                className="bg-transparent outline-none text-[11px] border-b py-0.5"
+                style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
+              >
+                <option value="All" style={{ backgroundColor: COLORS.panel }}>
+                  All Equipment
+                </option>
+                {EQUIPMENT_OPTIONS.map((eq) => (
+                  <option key={eq} value={eq} style={{ backgroundColor: COLORS.panel }}>
+                    {eq}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div
                 className="flex items-center gap-2 px-3 border"
@@ -350,13 +354,16 @@ export default function CreateWorkoutPage() {
               />
             </div>
 
-            {/* search results dropdown */}
+            {/* search results dropdown - capped height, scrolls past MAX_VISIBLE_RESULTS rows */}
             {showResults && results.length > 0 && (
                 <div
-                    className="absolute left-0 right-0 z-10 border border-t-0"
+                    className="absolute left-0 right-0 z-10 border border-t-0 overflow-y-auto"
                     style={{
                       backgroundColor: COLORS.panel,
-                      borderColor: COLORS.hairline
+                      borderColor: COLORS.hairline,
+                      maxHeight: `${MAX_VISIBLE_RESULTS * RESULT_ROW_HEIGHT}px`,
+                      scrollbarWidth: "thin",
+                      scrollbarColor: `${COLORS.hairline} ${COLORS.panel}`,
                     }}
                 >
                   {results.map((ex) => (
@@ -480,8 +487,16 @@ export default function CreateWorkoutPage() {
         <div className="flex gap-3 mt-8">
           <button
             onClick={() => navigate("/workout-page")}
-            className="flex-1 py-3.5 text-[13px] tracking-[0.2em] uppercase border"
+            className="flex-1 py-3.5 text-[13px] tracking-[0.2em] uppercase border transition-colors"
             style={{ color: COLORS.subtext, borderColor: COLORS.hairline }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = COLORS.goldBright;
+              e.currentTarget.style.borderColor = COLORS.gold;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = COLORS.subtext;
+              e.currentTarget.style.borderColor = COLORS.hairline;
+            }}
           >
             Cancel
           </button>

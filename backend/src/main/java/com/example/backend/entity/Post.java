@@ -4,6 +4,9 @@ import com.example.backend.entity.workoutEntities.Workout;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "posts")
 @Getter
@@ -34,11 +37,16 @@ public class Post {
     )
     private Workout workout;
 
-
     @Column(nullable = false)
     private String caption;
 
 
     private String photoUrl;
 
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Comment> comments = new ArrayList<>();
 }

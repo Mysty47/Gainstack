@@ -62,11 +62,11 @@ public class MinioService {
     }
 
 
-    public String upload(MultipartFile file) throws Exception {
+    public String upload(MultipartFile file, String folder) throws Exception {
 
         byte[] compressedImage = imageCompressionService.compress(file);
 
-        String filename = UUID.randomUUID() + ".jpg";
+        String filename = folder + "/" + UUID.randomUUID() + ".jpg";
 
         minioClient.putObject(
                 PutObjectArgs.builder()

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Eye, EyeOff, ArrowRight, Check, X } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Check, X, AlertCircle } from "lucide-react";
 import api from "../config/api";
 import {useNavigate} from "react-router-dom";
 
@@ -100,7 +100,12 @@ export default function SignupPage() {
                 navigate("/login");
             } else {
                 const error = await response.text();
-                setSignupError(error || "Signup failed.");
+
+                if (response.status === 409) {
+                    setSignupError("This email is already registered.");
+                } else {
+                    setSignupError(error || "Signup failed.");
+                }
             }
         } catch (err) {
             console.error(err);
