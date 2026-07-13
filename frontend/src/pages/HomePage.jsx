@@ -42,7 +42,6 @@ export default function HomePage() {
     const [posts, setPosts] = useState([]);
     // { [postId]: { liked: boolean, likeCount: number } }
     const [likes, setLikes] = useState({});
-    const [liked, setLiked] = useState({});
     const [saved, setSaved] = useState({});
 
     useEffect(() => {
@@ -66,7 +65,7 @@ export default function HomePage() {
     const toggleLike = async (postId) => {
         // optimistic update so the UI feels instant
         setLikes((prev) => {
-            const current = prev[postId] || { liked: false, likeCount: 0 };
+            const current = prev[postId] || {liked: false, likeCount: 0};
             return {
                 ...prev,
                 [postId]: {
@@ -79,12 +78,12 @@ export default function HomePage() {
         try {
             const res = await api.post(`/posts/${postId}/likes`);
             // reconcile with the real server response in case of drift
-            setLikes((prev) => ({ ...prev, [postId]: res.data }));
+            setLikes((prev) => ({...prev, [postId]: res.data}));
         } catch (err) {
             console.error("Failed to toggle like:", err);
             // revert on failure
             setLikes((prev) => {
-                const current = prev[postId] || { liked: false, likeCount: 0 };
+                const current = prev[postId] || {liked: false, likeCount: 0};
                 return {
                     ...prev,
                     [postId]: {
@@ -94,6 +93,8 @@ export default function HomePage() {
                 };
             });
         }
+    };
+
     useEffect(() => {
 
         api.get("/api/saved-workouts")
@@ -111,10 +112,6 @@ export default function HomePage() {
             .catch(console.error);
 
     }, []);
-
-    const toggleLike = (id) => {
-        setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
-    };
 
     const saveWorkout = async (workoutId) => {
 
