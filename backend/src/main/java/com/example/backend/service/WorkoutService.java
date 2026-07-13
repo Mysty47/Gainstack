@@ -139,7 +139,7 @@ public class WorkoutService {
         if (!workout.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("You do not have access to this workout");
         }
-        
+
         savedWorkoutRepository.deleteAllByWorkout(workout);
 
         List<Post> posts = postRepository.findByWorkout(workout);
