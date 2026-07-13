@@ -6,7 +6,6 @@ import {
   Calendar,
   Dumbbell,
   Trash2,
-  Pencil,
   Home,
   User,
   Layers,
@@ -313,36 +312,31 @@ export default function ShowWorkoutPage() {
 
             {/* actions */}
             <div className="flex gap-3 mt-8">
-
-              {!savedView && (
-                  <button
-                      onClick={() =>
-                          navigate(`/edit-workout/${workoutId || workout.id}`, {
-                            state: { workout }
-                          })
-                      }
-                      className="flex-1 py-3.5 flex items-center justify-center gap-2 text-[13px] tracking-[0.2em] uppercase border"
-                      style={{
-                        color: COLORS.text,
-                        borderColor: COLORS.hairline
-                      }}
-                  >
-                    <Pencil size={14} />
-                    Edit
-                  </button>
-              )}
-
               <button
                   onClick={savedView ? handleUnsave : handleDelete}
                   disabled={deleting}
-                  className="flex-1 py-3.5 flex items-center justify-center gap-2 text-[13px] tracking-[0.2em] uppercase border"
+                  className="flex-1 py-3.5 flex items-center justify-center gap-2 text-[13px] tracking-[0.2em] uppercase border transition-all duration-300 hover:scale-[1.02]"
                   style={{
                     color: savedView ? COLORS.goldBright : "#D9756C",
-                    borderColor: COLORS.hairline
+                    borderColor: COLORS.hairline,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = savedView
+                        ? COLORS.goldBright
+                        : "#D9756C";
+
+                    e.currentTarget.style.backgroundColor = savedView
+                        ? "rgba(63,129,204,0.08)"
+                        : "rgba(217,117,108,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = COLORS.hairline;
+                    e.currentTarget.style.backgroundColor = "transparent";
                   }}
               >
                 <Trash2
                     size={14}
+                    className="transition-transform duration-300 group-hover:scale-110"
                     style={{
                       color: savedView ? COLORS.goldBright : "#D9756C"
                     }}
@@ -358,7 +352,6 @@ export default function ShowWorkoutPage() {
                             ? "Confirm Delete"
                             : "Delete"
                 }
-
               </button>
 
             </div>
