@@ -51,4 +51,7 @@ public class User {
             orphanRemoval = true
     )
     private List<SavedWorkouts> savedWorkouts = new ArrayList<>();
+
+    @Column(length = 1000)
+    private String profilePictureUrl;
 }

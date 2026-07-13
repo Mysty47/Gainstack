@@ -29,10 +29,22 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         UserDTO dto = new UserDTO();
+
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
+        dto.setProfilePictureUrl(user.getProfilePictureUrl());
 
         return dto;
+    }
+
+    public void updateProfilePicture(String email, String url) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        user.setProfilePictureUrl(url);
+
+        userRepository.save(user);
     }
 }

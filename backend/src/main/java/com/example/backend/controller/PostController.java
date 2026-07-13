@@ -46,7 +46,7 @@ public class PostController {
             @RequestParam("file") MultipartFile file
     ) throws Exception {
 
-        String url = minioService.upload(file);
+        String url = minioService.upload(file, "/posts");
 
         return ResponseEntity.ok(
                 Map.of("url", url)

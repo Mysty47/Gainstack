@@ -15,6 +15,8 @@ public class PostsResponseDTO {
     private String photoUrl;
     private Long userId;
     private String username;
+    private String profilePictureUrl;
     private String workoutTitle;
     private Long workoutId;
+
 }

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LoginController {
-
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final AuthService authService;

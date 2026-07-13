@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Camera, Pencil, LogOut, Shield, Home, Dumbbell, User } from "lucide-react";
 import { clearTokens } from "../auth/tokenService";
 import { getCurrentUser } from "../auth/getCurrentUser";
+import api from "../api/axios";
 
 const COLORS = {
   bg: "#0A0A0B",
@@ -22,6 +23,48 @@ export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadProfilePicture = async (file) => {
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    try {
+
+      setUploading(true);
+
+      await api.post(
+          "/account/profile-picture",
+          formData,
+          {
+            headers:{
+              "Content-Type":"multipart/form-data"
+            }
+          }
+      );
+
+
+      const updatedUser = await getCurrentUser();
+      setUser(updatedUser);
+
+
+    } catch(error) {
+
+      console.error(
+          "Profile picture upload failed:",
+          error
+      );
+
+    } finally {
+
+      setUploading(false);
+
+    }
+  };
 
   useEffect(() => {
     getCurrentUser()
@@ -88,29 +131,67 @@ export default function ProfilePage() {
           </p>
         )}
 
+        <input
+            id="profile-picture-input"
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(e)=>{
+
+              const file = e.target.files[0];
+
+              if(file){
+                setSelectedImage(file);
+                uploadProfilePicture(file);
+              }
+
+            }}
+        />
+
         {/* avatar */}
         <div className="relative mb-5">
           <div
             className="w-24 h-24 rounded-full flex items-center justify-center border-2 overflow-hidden"
             style={{ borderColor: COLORS.gold, backgroundColor: COLORS.panel }}
           >
-            <span
-              className="text-3xl"
-              style={{
-                color: COLORS.gold,
-                fontFamily: "'Playfair Display', Georgia, serif",
-              }}
-            >
-              {user?.username?.charAt(0) ?? "?"}
-            </span>
+            {
+              user?.profilePictureUrl ?
+
+                  <img
+                      src={user.profilePictureUrl}
+                      alt="profile"
+                      className="w-full h-full object-cover"
+                  />
+
+                  :
+
+                  <span
+                      className="text-3xl"
+                      style={{
+                        color: COLORS.gold,
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                      }}
+                      >
+                    {user?.username?.charAt(0) ?? "?"}
+                </span>
+            }
           </div>
-          <button
-            className="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center border"
-            style={{ backgroundColor: COLORS.gold, borderColor: COLORS.bg }}
-            aria-label="Change profile picture"
+          <label
+              htmlFor="profile-picture-input"
+              className="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center border cursor-pointer"
+              style={{
+                backgroundColor: COLORS.gold,
+                borderColor: COLORS.bg
+              }}
           >
-            <Camera size={14} style={{ color: COLORS.bg }} />
-          </button>
+            {
+              uploading
+                  ?
+                  <span className="text-xs">...</span>
+                  :
+                  <Camera size={14} style={{color: COLORS.bg}} />
+            }
+          </label>
         </div>
 
         <h2

@@ -299,18 +299,29 @@ export default function HomePage() {
                             <div className="flex items-center justify-between px-4 py-3">
                                 <div className="flex items-center gap-3">
                                     <div
-                                        className="w-9 h-9 rounded-full flex items-center justify-center border shrink-0"
-                                        style={{ borderColor: COLORS.gold }}
+                                        className="w-9 h-9 rounded-full flex items-center justify-center border shrink-0 overflow-hidden"
+                                        style={{
+                                            borderColor: COLORS.gold,
+                                            backgroundColor: COLORS.panel
+                                        }}
                                     >
-                    <span
-                        className="text-xs"
-                        style={{
-                            color: COLORS.gold,
-                            fontFamily: "'Playfair Display', Georgia, serif",
-                        }}
-                    >
-                      {post.username?.charAt(0).toUpperCase()}
-                    </span>
+                                        {post.profilePictureUrl ? (
+                                            <img
+                                                src={post.profilePictureUrl}
+                                                alt="profile"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span
+                                                className="text-xs"
+                                                style={{
+                                                    color: COLORS.gold,
+                                                    fontFamily: "'Playfair Display', Georgia, serif",
+                                                }}
+                                            >
+            {post.username?.charAt(0).toUpperCase()}
+        </span>
+                                        )}
                                     </div>
                                     <div>
                                         <p className="text-sm" style={{ color: COLORS.text }}>
