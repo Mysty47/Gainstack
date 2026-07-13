@@ -235,10 +235,6 @@ export default function ProfilePage() {
                   {field.value}
                 </p>
               </div>
-
-              <button aria-label={`Edit ${field.label}`}>
-                <Pencil size={15} style={{ color: COLORS.goldDim }} />
-              </button>
             </div>
           ))}
         </div>

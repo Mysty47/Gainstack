@@ -166,21 +166,32 @@ function CommentsModal({ post, onClose }) {
                             </p>
                         )}
 
-                        {comments.map((comment) => (
-                            <div key={comment.id} className="flex items-start gap-3">
+                        {comments.map((comment, index) => (
+                            <div key={comment.id ?? index} className="flex items-start gap-3">
                                 <div
-                                    className="w-7 h-7 rounded-full flex items-center justify-center border shrink-0"
-                                    style={{ borderColor: COLORS.gold }}
+                                    className="w-7 h-7 rounded-full flex items-center justify-center border shrink-0 overflow-hidden"
+                                    style={{
+                                        borderColor: COLORS.gold,
+                                        backgroundColor: COLORS.panel
+                                    }}
                                 >
-                                    <span
-                                        className="text-[11px]"
-                                        style={{
-                                            color: COLORS.gold,
-                                            fontFamily: "'Playfair Display', Georgia, serif",
-                                        }}
-                                    >
-                                        {comment.username?.charAt(0).toUpperCase()}
-                                    </span>
+                                    {comment.profilePictureUrl ? (
+                                        <img
+                                            src={comment.profilePictureUrl}
+                                            alt="profile"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <span
+                                            className="text-[11px]"
+                                            style={{
+                                                color: COLORS.gold,
+                                                fontFamily: "'Playfair Display', Georgia, serif",
+                                            }}
+                                        >
+            {comment.username?.charAt(0).toUpperCase()}
+        </span>
+                                    )}
                                 </div>
                                 <p className="text-[13px] leading-snug" style={{ color: COLORS.subtext }}>
                                     <span style={{ color: COLORS.text }}>
