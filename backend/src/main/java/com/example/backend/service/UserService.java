@@ -18,8 +18,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User createUser(SignUpDTO signUpDTO) {
+
+        if (userRepository.findByEmail(signUpDTO.getEmail()).isPresent()) {
+            throw new RuntimeException("EMAIL_ALREADY_EXISTS");
+        }
+
         User user = userMapper.toEntity(signUpDTO);
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return userRepository.save(user);
     }
 
