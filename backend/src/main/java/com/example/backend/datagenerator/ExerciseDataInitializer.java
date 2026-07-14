@@ -1,7 +1,7 @@
 package com.example.backend.datagenerator;
 
 import com.example.backend.entity.workoutEntities.Exercise;
-import com.example.backend.repository.ExerciseRepository;
+import com.example.backend.repository.workoutRepositories.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

@@ -1,0 +1,21 @@
+package com.example.backend.repository.postsRepositories;
+
+import com.example.backend.entity.postsEntities.Post;
+import com.example.backend.entity.workoutEntities.Workout;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface PostRepository
+        extends JpaRepository<Post, Long> {
+    @Query("""
+        SELECT p FROM Post p
+        JOIN Like l ON l.post = p
+        WHERE l.user.id = :userId
+        ORDER BY l.id DESC
+        """)
+    List<Post> findLikedPostsByUserId(@Param("userId") Long userId);
+    List<Post> findByWorkout(Workout workout);
+}

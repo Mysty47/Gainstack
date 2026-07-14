@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.example.backend.entity.postsEntities.Post;
 import com.example.backend.entity.workoutEntities.Exercise;
 import com.example.backend.entity.workoutEntities.SavedWorkouts;
 import com.example.backend.entity.workoutEntities.Workout;
@@ -7,11 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.context.annotation.Bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter

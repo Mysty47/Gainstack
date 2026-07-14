@@ -2,7 +2,7 @@ package com.example.backend.config;
 
 import com.example.backend.filter.JwtAuthFilter;
 
-import com.example.backend.service.CustomUserDetailsService;
+import com.example.backend.service.userServices.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

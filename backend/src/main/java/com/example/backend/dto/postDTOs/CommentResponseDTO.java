@@ -1,6 +1,6 @@
 package com.example.backend.dto.postDTOs;
 
-import com.example.backend.entity.Comment;
+import com.example.backend.entity.postsEntities.Comment;
 import lombok.Getter;
 
 @Getter
