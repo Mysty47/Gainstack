@@ -5,9 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDTO {
-    private long id;
-    private String username;
-    private String email;
+public class ProfilePictureRequestDTO {
+
     private String profilePictureUrl;
 }

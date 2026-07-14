@@ -53,6 +53,7 @@ public class PostService {
                         post.getPhotoUrl(),
                         post.getUser().getId(),
                         post.getUser().getUsername(),
+                        post.getUser().getProfilePictureUrl(),
                         post.getWorkout().getTitle(),
                         post.getWorkout().getId()
                 ))
@@ -79,6 +80,7 @@ public class PostService {
                         post.getPhotoUrl(),
                         post.getUser().getId(),
                         post.getUser().getUsername(),
+                        post.getUser().getProfilePictureUrl(),
                         post.getWorkout() != null ? post.getWorkout().getTitle() : null,
                         post.getWorkout() != null ? post.getWorkout().getId() : null
                 ))

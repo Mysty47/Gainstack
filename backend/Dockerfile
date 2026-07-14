@@ -8,4 +8,4 @@ RUN ./gradlew bootJar
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "build/libs/backend.jar"]
+ENTRYPOINT ["java", "-jar", "build/libs/backend.jar"]

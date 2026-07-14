@@ -100,7 +100,12 @@ export default function SignupPage() {
                 navigate("/login");
             } else {
                 const error = await response.text();
-                setSignupError(error || "Signup failed.");
+
+                if (response.status === 409) {
+                    setSignupError("This email is already registered.");
+                } else {
+                    setSignupError(error || "Signup failed.");
+                }
             }
         } catch (err) {
             console.error(err);

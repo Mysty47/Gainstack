@@ -6,12 +6,12 @@ import com.example.backend.entity.workoutEntities.Exercise;
 import com.example.backend.entity.workoutEntities.Workout;
 import com.example.backend.entity.workoutEntities.WorkoutExercise;
 import com.example.backend.entity.workoutEntities.WorkoutSet;
-import com.example.backend.repository.ExerciseRepository;
-import com.example.backend.repository.WorkoutRepository;
+import com.example.backend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,9 @@ public class WorkoutService {
 
     private final WorkoutRepository workoutRepository;
     private final ExerciseRepository exerciseRepository;
+    private final PostRepository postRepository;
+    private final SavedWorkoutRepository savedWorkoutRepository;
+    private final LikeRepository likeRepository;
 
     public WorkoutResponseDTO createWorkout(WorkoutDTO dto, User user) {
 
@@ -127,6 +130,7 @@ public class WorkoutService {
         );
     }
 
+    @Transactional
     public void deleteWorkout(Long workoutId, User user) {
 
         Workout workout = workoutRepository.findById(workoutId)
@@ -135,6 +139,22 @@ public class WorkoutService {
         if (!workout.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("You do not have access to this workout");
         }
+
+        savedWorkoutRepository.deleteAllByWorkout(workout);
+
+        List<Post> posts = postRepository.findByWorkout(workout);
+
+        for (Post post : posts) {
+
+            likeRepository.deleteAllByPost(post);
+
+            postRepository.delete(post);
+        }
+
+        likeRepository.flush();
+        postRepository.flush();
+        savedWorkoutRepository.flush();
+
 
         workoutRepository.delete(workout);
     }
