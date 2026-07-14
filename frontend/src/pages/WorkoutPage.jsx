@@ -240,7 +240,17 @@ export default function WorkoutPage() {
           <div className="grid grid-cols-7 gap-y-1">
             {cells.map((day, i) => {
               const key = day ? `${year}-${month}-${day}` : null;
-              const hasWorkout = key && notes[key];
+              const hasWorkout =
+                  day &&
+                  createdWorkouts.some((w) => {
+                    const date = new Date(w.workoutDate);
+
+                    return (
+                        date.getFullYear() === year &&
+                        date.getMonth() === month &&
+                        date.getDate() === day
+                    );
+                  });
               return (
                 <button
                   key={i}
